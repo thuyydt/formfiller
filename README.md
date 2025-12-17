@@ -9,10 +9,10 @@
 Fills fake-data to HTML Form with AI-powered detection.
 
 ## Browser Support
-- ✅ **Chrome** (v126+)
-- ✅ **Firefox** (v109+)
-- ✅ **Safari** (v14+, macOS only)
-- ✅ **Edge** (Chromium-based)
+- ✅ **Chrome** (v126+): Install from [Chrome Web Store](https://chromewebstore.google.com/detail/form-filler/akgccbkihlhgjmapmjbhafnoehhkpaai)
+- ✅ **Firefox** (v142+): Install from [Mozilla Add-ons](https://addons.mozilla.org/en-US/firefox/addon/form-filler-thuyydt/)
+- ✅ **Safari** (v14+, macOS only): Download from gitHub Releases and follow [Safari Installation Guide](./SAFARI_INSTALL_GUIDE.md)
+- ✅ **Edge** (Chromium-based): Install from Chrome Web Store
 
 ## Language Support
 - English
@@ -145,7 +145,6 @@ This feature is particularly useful for forms that don't have clear field identi
 - Works as intelligent fallback for ambiguous or non-standard fields
 - Trained on thousands of real-world form patterns
 - Supports multi-language field detection (11+ languages)
-- See [AI_DETECTION.md](./AI_DETECTION.md) for detailed documentation
 
 **Example use cases:**
 - Non-standard field naming: `usr_eml` → detected as `email`
@@ -195,8 +194,6 @@ The extension uses TypeScript for better type safety and developer experience:
 - **Type Definitions**: Comprehensive interfaces in `types.ts`
 - **IDE Support**: Enhanced IntelliSense and refactoring
 
-See [TYPESCRIPT_IMPLEMENTATION.md](./TYPESCRIPT_IMPLEMENTATION.md) for details.
-
 ```bash
 # Type check all TypeScript files
 npm run type-check
@@ -211,8 +208,6 @@ The extension has comprehensive test coverage (70%+) using Jest:
 - **Unit Tests**: Helper functions, field detection, form fillers
 - **Integration Tests**: Complete form filling workflows
 - **450+ Test Cases**: Covering edge cases and error handling
-
-See [TESTING_GUIDE.md](./TESTING_GUIDE.md) for detailed testing documentation.
 
 ```bash
 # Run all tests
