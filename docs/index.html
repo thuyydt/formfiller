@@ -21,7 +21,7 @@
     />
     <meta
       name="keywords"
-      content="form filler, dummy data generator, auto fill forms, chrome extension, firefox addon, safari extension, web testing, automated testing, privacy first, open source, developer tools, productivity tool, ai form filler"
+      content="form filler, dummy data generator, auto fill forms, chrome extension, firefox addon, safari extension, web testing, automated testing, privacy first, open source, developer tools, productivity tool, ai form filler, qa tools, software testing, test data generator, fake data generator"
     />
     <meta name="author" content="thuyydt" />
     <meta name="robots" content="index, follow" />
@@ -29,7 +29,7 @@
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://github.com/thuyydt/formfiller/" />
+    <meta property="og:url" content="https://thuyydt.github.io/formfiller/" />
     <meta property="og:title" content="Form Filler - AI-Powered Dummy Data Generator" />
     <meta
       property="og:description"
@@ -42,7 +42,7 @@
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://github.com/thuyydt/formfiller/" />
+    <meta property="twitter:url" content="https://thuyydt.github.io/formfiller/" />
     <meta property="twitter:title" content="Form Filler - AI-Powered Dummy Data Generator" />
     <meta
       property="twitter:description"
@@ -56,15 +56,9 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/icon32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/icon16.png" />
-    <link rel="canonical" href="https://github.com/thuyydt/formfiller/" />
+    <link rel="canonical" href="https://thuyydt.github.io/formfiller/" />
 
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
 
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -105,7 +99,18 @@
         box-sizing: border-box;
       }
       body {
-        font-family: 'Inter', sans-serif;
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          Roboto,
+          Oxygen,
+          Ubuntu,
+          Cantarell,
+          'Open Sans',
+          'Helvetica Neue',
+          sans-serif;
         line-height: 1.6;
         color: var(--text-main);
         background-color: var(--bg-dark);
@@ -240,8 +245,10 @@
         padding: 120px 0 80px;
         text-align: center;
         overflow: hidden;
+        position: relative;
       }
-      .hero-bg-glow {
+      .hero::before {
+        content: '';
         position: absolute;
         top: 50%;
         left: 50%;
@@ -485,6 +492,25 @@
           grid-template-columns: 1fr;
         }
       }
+      .cta-card {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+        border: 1px solid var(--border);
+        border-radius: 32px;
+        padding: 80px 24px;
+        position: relative;
+        overflow: hidden;
+      }
+      .cta-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 50% 50%, var(--primary-glow) 0%, transparent 70%);
+        opacity: 0.2;
+        pointer-events: none;
+      }
       .video-btn {
         padding: 2px 4px;
         font-size: 0.8rem;
@@ -509,8 +535,8 @@
     <!-- Header -->
     <header>
       <div class="container nav-flex">
-        <a href="#" class="logo">
-          <img src="assets/icons/icon128.png" alt="Form Filler Logo" width="32" height="32" />
+        <a href="https://thuyydt.github.io/formfiller/" class="logo">
+          <img src="assets/icons/icon48.png" alt="Form Filler Logo" width="32" height="32" />
           Form Filler
         </a>
         <nav>
@@ -539,373 +565,380 @@
       </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-      <div class="hero-bg-glow"></div>
-      <div class="container">
-        <h1>
-          Stop Filling Forms Manually.<br />
-          <span class="gradient-text">Let AI Do It For You.</span>
-        </h1>
-        <p class="hero-subtitle">
-          The intelligent form filler for developers and testers. Context-aware, privacy-first, and
-          available natively on Chrome, Firefox, and Safari.
-        </p>
-        <div class="hero-buttons">
-          <!-- go to Google Chrome Web Store -->
-          <a
-            href="https://chromewebstore.google.com/detail/form-filler/akgccbkihlhgjmapmjbhafnoehhkpaai"
-            class="btn btn-primary"
-            target="_blank"
-          >
-            <img src="assets/chrome.svg" alt="Chrome" width="20" height="20" loading="lazy" />
-            Add to Chrome
-          </a>
-          <!-- go to Mozilla Firefox Add-ons -->
-          <a
-            href="https://addons.mozilla.org/en-US/firefox/addon/form-filler-thuyydt/"
-            class="btn btn-secondary"
-            target="_blank"
-          >
-            <img src="assets/firefox.svg" alt="Firefox" width="20" height="20" loading="lazy" />
-            Firefox
-          </a>
-          <!-- Just download from my GitHub for Safari -->
-          <a
-            href="https://github.com/thuyydt/formfiller/releases/"
-            class="btn btn-secondary"
-            target="_blank"
-          >
-            <img src="assets/safari.svg" alt="Safari" width="20" height="20" loading="lazy" />
-            Safari
-          </a>
-          <a
-            id="live-demo-btn"
-            href="demos/form-en.html"
-            class="btn btn-secondary"
-            style="border-color: var(--primary); color: var(--primary)"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <polygon points="5 3 19 12 5 21 5 3"></polygon>
-            </svg>
-            Live Demo
-          </a>
-        </div>
-
-        <div class="hero-image-wrapper">
-          <div
-            class="video-controls"
-            style="
-              display: flex;
-              justify-content: flex-start;
-              gap: 8px;
-              margin-bottom: 12px;
-              padding-left: 4px;
-            "
-          >
-            <button class="btn btn-sm video-btn active" data-lang="en" onclick="switchVideo('en')">
-              🇺🇸 English
-            </button>
-            <button class="btn btn-sm video-btn" data-lang="ja" onclick="switchVideo('ja')">
-              🇯🇵 Japanese
-            </button>
-            <button class="btn btn-sm video-btn" data-lang="vi" onclick="switchVideo('vi')">
-              🇻🇳 Vietnamese
-            </button>
-          </div>
-          <div class="hero-image" id="video-container">
-            <video
-              id="demo-video"
-              autoplay
-              loop
-              muted
-              playsinline
-              preload="auto"
-              width="100%"
-              style="display: block"
-            >
-              <source src="assets/demo-en.webm" type="video/webm" />
-              Your browser does not support the video tag.
-            </video>
-            <div class="video-fallback">
-              <h3 style="margin-bottom: 16px">Video Playback Unavailable</h3>
-              <p style="margin-bottom: 24px; font-size: 0.9rem">
-                Your browser might not support the WebM video format.
-              </p>
-              <a
-                href="https://github.com/thuyydt/formfiller"
-                target="_blank"
-                class="btn btn-primary"
-              >
-                View on GitHub
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Features Section -->
-    <section class="section">
-      <div class="container">
-        <h2 class="text-center" style="margin-bottom: 16px">Why Choose Form Filler?</h2>
-        <p
-          class="text-center"
-          style="margin-bottom: 60px; max-width: 600px; margin-left: auto; margin-right: auto"
-        >
-          Built for speed, accuracy, and privacy. The only form filler you'll ever need.
-        </p>
-        <div class="grid-bento">
-          <div class="bento-card bento-span-2">
-            <h3>Smart Context Detection</h3>
-            <p>
-              Most fillers just look at `name='email'`. We look at the label, the placeholder, and
-              the surrounding text. Our weighted scoring algorithm ensures the right data goes into
-              the right field, every time.
-            </p>
-          </div>
-          <div class="bento-card">
-            <h3>Native Safari Support</h3>
-            <p>
-              Mac users, we heard you. Form Filler is built as a native Safari App Extension,
-              ensuring smooth performance and full compatibility with the Apple ecosystem.
-            </p>
-          </div>
-          <div class="bento-card">
-            <h3>Localized Data</h3>
-            <p>
-              Testing a Vietnamese e-commerce site? Or a Japanese registration form? We generate
-              culturally accurate names, addresses, and phone numbers for multiple locales.
-            </p>
-          </div>
-          <div class="bento-card bento-span-2">
-            <h3>Total Privacy</h3>
-            <p>
-              Your data is yours. Form Filler is open-source and operates entirely offline. No
-              analytics, no tracking, no data sent to the cloud.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- How It Works -->
-    <section class="section" style="background: rgba(255, 255, 255, 0.02)">
-      <div class="container">
-        <h2 class="text-center" style="margin-bottom: 60px">How It Works</h2>
-        <div class="grid grid-3">
-          <div class="step-card">
-            <div class="step-number">1</div>
-            <h3>Install</h3>
-            <p>Add the extension to your browser in seconds. Available on all major stores.</p>
-          </div>
-          <div class="step-card">
-            <div class="step-number">2</div>
-            <h3>Configure</h3>
-            <p>Set up custom fields, regex patterns, or hotkeys if you need specific data.</p>
-          </div>
-          <div class="step-card">
-            <div class="step-number">3</div>
-            <h3>Click</h3>
-            <p>Hit the icon or use the hotkey (Cmd+Shift+F) and watch your form fill instantly.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Comparison -->
-    <section class="section">
-      <div class="container">
-        <h2 class="text-center" style="margin-bottom: 60px">Better than the rest</h2>
-        <div class="comparison-wrapper">
-          <table class="comparison-table">
-            <thead>
-              <tr>
-                <th>Feature</th>
-                <th class="highlight-col">Form Filler (Us)</th>
-                <th>Manual Typing</th>
-                <th>Other Extensions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Speed</strong></td>
-                <td class="highlight-col">⚡️ Instant</td>
-                <td>🐢 Slow</td>
-                <td>⚡️ Instant</td>
-              </tr>
-              <tr>
-                <td><strong>Accuracy</strong></td>
-                <td class="highlight-col">✅ Context-Aware (AI)</td>
-                <td>✅ High</td>
-                <td>❌ ID-Match Only</td>
-              </tr>
-              <tr>
-                <td><strong>Safari Support</strong></td>
-                <td class="highlight-col">✅ Native App</td>
-                <td>N/A</td>
-                <td>❌ Rare / Paid</td>
-              </tr>
-              <tr>
-                <td><strong>Privacy</strong></td>
-                <td class="highlight-col">✅ Open Source</td>
-                <td>✅ Secure</td>
-                <td>❓ Closed Source</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- Testimonials -->
-    <section class="section">
-      <div class="container">
-        <h2 class="text-center" style="margin-bottom: 60px">Loved by Developers Worldwide</h2>
-        <div class="grid grid-3">
-          <div class="testimonial-card">
-            <div class="testimonial-flag">🇯🇵</div>
-            <p class="testimonial-quote">
-              "この拡張機能は日本語のフォームのテストでとても時間を節約してくれます。名前の生成は的確です！ありがとうございます！"
-            </p>
-            <div class="testimonial-author">
-              <div class="author-avatar">YT</div>
-              <div>
-                <h3 style="font-size: 1rem; margin: 0">Yuki Tanaka</h3>
-                <p style="font-size: 0.8rem; margin: 0; color: var(--text-muted)">
-                  Frontend Dev, Tokyo
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="testimonial-card">
-            <div class="testimonial-flag">🇻🇳</div>
-            <p class="testimonial-quote">
-              "Tuyệt vời! Hỗ trợ tiếng Việt rất tốt, điền form nhanh và chính xác. Rất hữu ích cho
-              anh em developer."
-            </p>
-            <div class="testimonial-author">
-              <div class="author-avatar">MN</div>
-              <div>
-                <h3 style="font-size: 1rem; margin: 0">Minh Nguyen</h3>
-                <p style="font-size: 0.8rem; margin: 0; color: var(--text-muted)">
-                  Fullstack Dev, Ho Chi Minh
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="testimonial-card">
-            <div class="testimonial-flag">🇪🇺</div>
-            <p class="testimonial-quote">
-              "Finally a form filler that respects GDPR and doesn't send data to the cloud.
-              Essential for our QA team."
-            </p>
-            <div class="testimonial-author">
-              <div class="author-avatar">SS</div>
-              <div>
-                <h3 style="font-size: 1rem; margin: 0">Sarah Schmidt</h3>
-                <p style="font-size: 0.8rem; margin: 0; color: var(--text-muted)">
-                  QA Lead, Berlin
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FAQ -->
-    <section class="section" style="max-width: 800px; margin: 0 auto">
-      <div class="container">
-        <h2 class="text-center" style="margin-bottom: 40px">Frequently Asked Questions</h2>
-
-        <div class="faq-item">
-          <h3>Is it really free?</h3>
-          <p>
-            Yes, it is 100% free and open-source. You can check the code on GitHub or contribute to
-            the project.
+    <main>
+      <!-- Hero Section -->
+      <section class="hero">
+        <div class="container">
+          <h1>
+            Stop Filling Forms Manually.<br />
+            <span class="gradient-text">Let AI Do It For You.</span>
+          </h1>
+          <p class="hero-subtitle">
+            The intelligent form filler for developers and testers. Context-aware, privacy-first,
+            and available natively on Chrome, Firefox, and Safari.
           </p>
-        </div>
-
-        <div class="faq-item">
-          <h3>Can I add my own custom data?</h3>
-          <p>
-            Absolutely. You can define custom fields using Regex or specific values in the Settings
-            panel to match your specific testing needs.
-          </p>
-        </div>
-
-        <div class="faq-item">
-          <h3>Does it work on iframes?</h3>
-          <p>
-            Yes, Form Filler can detect and fill fields inside iframes, which is common in payment
-            forms and embedded widgets.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="section text-center">
-      <div class="container">
-        <div
-          style="
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
-            border: 1px solid var(--border);
-            border-radius: 32px;
-            padding: 80px 24px;
-            position: relative;
-            overflow: hidden;
-          "
-        >
-          <div
-            style="
-              position: absolute;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 100%;
-              background: radial-gradient(
-                circle at 50% 50%,
-                var(--primary-glow) 0%,
-                transparent 70%
-              );
-              opacity: 0.2;
-              pointer-events: none;
-            "
-          ></div>
-          <h2 style="margin-bottom: 24px">Ready to speed up your testing?</h2>
-          <p style="max-width: 600px; margin: 0 auto 40px; font-size: 1.2rem">
-            Join thousands of developers who are saving hours every week. Open source, free, and
-            privacy-first.
-          </p>
-          <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap">
+          <div class="hero-buttons">
+            <!-- go to Google Chrome Web Store -->
             <a
               href="https://chromewebstore.google.com/detail/form-filler/akgccbkihlhgjmapmjbhafnoehhkpaai"
               class="btn btn-primary"
               target="_blank"
-              >Get Started for Free</a
             >
+              <img
+                src="assets/chrome.svg"
+                alt="Chrome Browser"
+                width="20"
+                height="20"
+                loading="lazy"
+              />
+              Add to Chrome
+            </a>
+            <!-- go to Mozilla Firefox Add-ons -->
             <a
-              href="https://github.com/thuyydt/formfiller"
-              target="_blank"
+              href="https://addons.mozilla.org/en-US/firefox/addon/form-filler-thuyydt/"
               class="btn btn-secondary"
-              >View Source Code</a
+              target="_blank"
             >
+              <img
+                src="assets/firefox.svg"
+                alt="Firefox Browser"
+                width="20"
+                height="20"
+                loading="lazy"
+              />
+              Firefox
+            </a>
+            <!-- Just download from my GitHub for Safari -->
+            <a
+              href="https://github.com/thuyydt/formfiller/releases/"
+              class="btn btn-secondary"
+              target="_blank"
+            >
+              <img
+                src="assets/safari.svg"
+                alt="Safari Browser"
+                width="20"
+                height="20"
+                loading="lazy"
+              />
+              Safari
+            </a>
+            <a
+              id="live-demo-btn"
+              href="demos/form-en.html"
+              class="btn btn-secondary"
+              style="border-color: var(--primary); color: var(--primary)"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              Live Demo
+            </a>
+          </div>
+
+          <div class="hero-image-wrapper">
+            <div
+              class="video-controls"
+              style="
+                display: flex;
+                justify-content: flex-start;
+                gap: 8px;
+                margin-bottom: 12px;
+                padding-left: 4px;
+              "
+            >
+              <button
+                class="btn btn-sm video-btn active"
+                data-lang="en"
+                onclick="switchVideo('en')"
+              >
+                🇺🇸 English
+              </button>
+              <button class="btn btn-sm video-btn" data-lang="ja" onclick="switchVideo('ja')">
+                🇯🇵 Japanese
+              </button>
+              <button class="btn btn-sm video-btn" data-lang="vi" onclick="switchVideo('vi')">
+                🇻🇳 Vietnamese
+              </button>
+            </div>
+            <div class="hero-image" id="video-container">
+              <video
+                id="demo-video"
+                autoplay
+                loop
+                muted
+                playsinline
+                preload="auto"
+                width="100%"
+                style="display: block"
+              >
+                <source src="assets/demo-en.webm" type="video/webm" />
+                <track
+                  kind="captions"
+                  src="assets/captions-en.vtt"
+                  srclang="en"
+                  label="English"
+                  default
+                />
+                Your browser does not support the video tag.
+              </video>
+              <div class="video-fallback">
+                <h3 style="margin-bottom: 16px">Video Playback Unavailable</h3>
+                <p style="margin-bottom: 24px; font-size: 0.9rem">
+                  Your browser might not support the WebM video format.
+                </p>
+                <a
+                  href="https://github.com/thuyydt/formfiller"
+                  target="_blank"
+                  class="btn btn-primary"
+                >
+                  View on GitHub
+                </a>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <!-- Features Section -->
+      <section class="section">
+        <div class="container">
+          <h2 class="text-center" style="margin-bottom: 16px">Why Choose Form Filler?</h2>
+          <p
+            class="text-center"
+            style="margin-bottom: 60px; max-width: 600px; margin-left: auto; margin-right: auto"
+          >
+            Built for speed, accuracy, and privacy. The only form filler you'll ever need.
+          </p>
+          <div class="grid-bento">
+            <div class="bento-card bento-span-2">
+              <h3>Smart Context Detection</h3>
+              <p>
+                Most fillers just look at `name='email'`. We look at the label, the placeholder, and
+                the surrounding text. Our weighted scoring algorithm ensures the right data goes
+                into the right field, every time.
+              </p>
+            </div>
+            <div class="bento-card">
+              <h3>Native Safari Support</h3>
+              <p>
+                Mac users, we heard you. Form Filler is built as a native Safari App Extension,
+                ensuring smooth performance and full compatibility with the Apple ecosystem.
+              </p>
+            </div>
+            <div class="bento-card">
+              <h3>Localized Data</h3>
+              <p>
+                Testing a Vietnamese e-commerce site? Or a Japanese registration form? We generate
+                culturally accurate names, addresses, and phone numbers for multiple locales.
+              </p>
+            </div>
+            <div class="bento-card bento-span-2">
+              <h3>Total Privacy</h3>
+              <p>
+                Your data is yours. Form Filler is open-source and operates entirely offline. No
+                analytics, no tracking, no data sent to the cloud.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- How It Works -->
+      <section class="section" style="background: rgba(255, 255, 255, 0.02)">
+        <div class="container">
+          <h2 class="text-center" style="margin-bottom: 60px">How It Works</h2>
+          <div class="grid grid-3">
+            <div class="step-card">
+              <div class="step-number">1</div>
+              <h3>Install</h3>
+              <p>Add the extension to your browser in seconds. Available on all major stores.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-number">2</div>
+              <h3>Configure</h3>
+              <p>Set up custom fields, regex patterns, or hotkeys if you need specific data.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-number">3</div>
+              <h3>Click</h3>
+              <p>
+                Hit the icon or use the hotkey (Cmd+Shift+F) and watch your form fill instantly.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Comparison -->
+      <section class="section">
+        <div class="container">
+          <h2 class="text-center" style="margin-bottom: 60px">Better than the rest</h2>
+          <div class="comparison-wrapper">
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>Feature</th>
+                  <th class="highlight-col">Form Filler (Us)</th>
+                  <th>Manual Typing</th>
+                  <th>Other Extensions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Speed</strong></td>
+                  <td class="highlight-col">⚡️ Instant</td>
+                  <td>🐢 Slow</td>
+                  <td>⚡️ Instant</td>
+                </tr>
+                <tr>
+                  <td><strong>Accuracy</strong></td>
+                  <td class="highlight-col">✅ Context-Aware (AI)</td>
+                  <td>✅ High</td>
+                  <td>❌ ID-Match Only</td>
+                </tr>
+                <tr>
+                  <td><strong>Safari Support</strong></td>
+                  <td class="highlight-col">✅ Native App</td>
+                  <td>N/A</td>
+                  <td>❌ Rare / Paid</td>
+                </tr>
+                <tr>
+                  <td><strong>Privacy</strong></td>
+                  <td class="highlight-col">✅ Open Source</td>
+                  <td>✅ Secure</td>
+                  <td>❓ Closed Source</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Testimonials -->
+      <section class="section">
+        <div class="container">
+          <h2 class="text-center" style="margin-bottom: 60px">Loved by Developers Worldwide</h2>
+          <div class="grid grid-3">
+            <div class="testimonial-card">
+              <div class="testimonial-flag">🇯🇵</div>
+              <p class="testimonial-quote">
+                "この拡張機能は日本語のフォームのテストでとても時間を節約してくれます。名前の生成は的確です！ありがとうございます！"
+              </p>
+              <div class="testimonial-author">
+                <div class="author-avatar">YT</div>
+                <div>
+                  <h3 style="font-size: 1rem; margin: 0">Yuki Tanaka</h3>
+                  <p style="font-size: 0.8rem; margin: 0; color: var(--text-muted)">
+                    Frontend Dev, Tokyo
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="testimonial-card">
+              <div class="testimonial-flag">🇻🇳</div>
+              <p class="testimonial-quote">
+                "Tuyệt vời! Hỗ trợ tiếng Việt rất tốt, điền form nhanh và chính xác. Rất hữu ích cho
+                anh em developer."
+              </p>
+              <div class="testimonial-author">
+                <div class="author-avatar">MN</div>
+                <div>
+                  <h3 style="font-size: 1rem; margin: 0">Minh Nguyen</h3>
+                  <p style="font-size: 0.8rem; margin: 0; color: var(--text-muted)">
+                    Fullstack Dev, Ho Chi Minh
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="testimonial-card">
+              <div class="testimonial-flag">🇪🇺</div>
+              <p class="testimonial-quote">
+                "Finally a form filler that respects GDPR and doesn't send data to the cloud.
+                Essential for our QA team."
+              </p>
+              <div class="testimonial-author">
+                <div class="author-avatar">SS</div>
+                <div>
+                  <h3 style="font-size: 1rem; margin: 0">Sarah Schmidt</h3>
+                  <p style="font-size: 0.8rem; margin: 0; color: var(--text-muted)">
+                    QA Lead, Berlin
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="section" style="max-width: 800px; margin: 0 auto">
+        <div class="container">
+          <h2 class="text-center" style="margin-bottom: 40px">Frequently Asked Questions</h2>
+
+          <div class="faq-item">
+            <h3>Is it really free?</h3>
+            <p>
+              Yes, it is 100% free and open-source. You can check the code on GitHub or contribute
+              to the project.
+            </p>
+          </div>
+
+          <div class="faq-item">
+            <h3>Can I add my own custom data?</h3>
+            <p>
+              Absolutely. You can define custom fields using Regex or specific values in the
+              Settings panel to match your specific testing needs.
+            </p>
+          </div>
+
+          <div class="faq-item">
+            <h3>Does it work on iframes?</h3>
+            <p>
+              Yes, Form Filler can detect and fill fields inside iframes, which is common in payment
+              forms and embedded widgets.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA Section -->
+      <section class="section text-center">
+        <div class="container">
+          <div class="cta-card">
+            <h2 style="margin-bottom: 24px">Ready to speed up your testing?</h2>
+            <p style="max-width: 600px; margin: 0 auto 40px; font-size: 1.2rem">
+              Join thousands of developers who are saving hours every week. Open source, free, and
+              privacy-first.
+            </p>
+            <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap">
+              <a
+                href="https://chromewebstore.google.com/detail/form-filler/akgccbkihlhgjmapmjbhafnoehhkpaai"
+                class="btn btn-primary"
+                target="_blank"
+                >Get Started for Free</a
+              >
+              <a
+                href="https://github.com/thuyydt/formfiller"
+                target="_blank"
+                class="btn btn-secondary"
+                >View Source Code</a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
 
     <!-- Footer -->
     <footer>
@@ -921,7 +954,7 @@
             gap: 10px;
           "
         >
-          <img src="assets/icons/icon128.png" alt="Form Filler Logo" width="24" height="24" />
+          <img src="assets/icons/icon48.png" alt="Form Filler Logo" width="24" height="24" />
           Form Filler
         </div>
         <p style="margin-bottom: 30px">Fill forms smarter, test faster.</p>
@@ -939,7 +972,82 @@
     </footer>
 
     <script>
-      const videos={en:{src:'assets/demo-en.webm',link:'demos/form-en.html'},ja:{src:'assets/demo-ja.webm',link:'demos/form-ja.html'},vi:{src:'assets/demo-vi.webm',link:'demos/form-vi.html'}};function switchVideo(e){document.querySelectorAll(".video-btn").forEach(t=>{t.classList.toggle("active",t.dataset.lang===e)});const t=document.getElementById("demo-video"),n=t.querySelector("source");videos[e]&&(n.src=videos[e].src,n.type="video/webm",t.load(),t.play().catch(e=>console.log("Autoplay prevented:",e));const o=document.getElementById("live-demo-btn");o&&(o.href=videos[e].link))}document.addEventListener("DOMContentLoaded",()=>{const e=document.getElementById("demo-video"),t=document.getElementById("video-container");if(e&&t){const n=()=>{console.log("Video playback failed, showing fallback"),t.classList.add("has-error")};e.addEventListener("error",n,!0);const o=e.querySelector("source");o&&o.addEventListener("error",n)}const n=navigator.language||navigator.userLanguage;let o="en";(n.includes("ja")||n.includes("JP"))&&(o="ja"),(n.includes("vi")||n.includes("VN"))&&(o="vi"),"en"!==o&&switchVideo(o)});
+      const videos = {
+        en: { src: 'assets/demo-en.webm', link: 'demos/form-en.html' },
+        ja: { src: 'assets/demo-ja.webm', link: 'demos/form-ja.html' },
+        vi: { src: 'assets/demo-vi.webm', link: 'demos/form-vi.html' }
+      };
+
+      function switchVideo(lang) {
+        // Update buttons
+        document.querySelectorAll('.video-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.lang === lang);
+        });
+
+        // Update video
+        const video = document.getElementById('demo-video');
+        const source = video.querySelector('source');
+        if (videos[lang]) {
+          source.src = videos[lang].src;
+          source.type = 'video/webm';
+          video.load();
+          video.play().catch(e => console.log('Autoplay prevented:', e));
+
+          // Update Live Demo button
+          const btn = document.getElementById('live-demo-btn');
+          if (btn) {
+            btn.href = videos[lang].link;
+          }
+        }
+      }
+
+      // Auto-detect language
+      document.addEventListener('DOMContentLoaded', () => {
+        // Video Error Handling
+        const video = document.getElementById('demo-video');
+        const videoContainer = document.getElementById('video-container');
+
+        if (video && videoContainer) {
+          const handleError = () => {
+            console.log('Video playback failed, showing fallback');
+            videoContainer.classList.add('has-error');
+          };
+
+          video.addEventListener('error', handleError, true);
+
+          // Check if source fails specifically
+          const source = video.querySelector('source');
+          if (source) {
+            source.addEventListener('error', handleError);
+          }
+        }
+
+        const userLang = navigator.language || navigator.userLanguage;
+        let targetLang = 'en';
+
+        if (userLang.includes('ja') || userLang.includes('JP')) {
+          targetLang = 'ja';
+        } else if (userLang.includes('vi') || userLang.includes('VN')) {
+          targetLang = 'vi';
+        }
+
+        if (targetLang !== 'en') {
+          switchVideo(targetLang);
+        }
+      });
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js').then(
+            registration => {
+              console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            },
+            err => {
+              console.log('ServiceWorker registration failed: ', err);
+            }
+          );
+        });
+      }
     </script>
   </body>
 </html>

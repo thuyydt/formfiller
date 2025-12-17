@@ -176,109 +176,116 @@
       >
       trước. Sau đó chuột phải và chọn 'Form Filler > Fill all inputs'.
     </div>
-    <div class="container">
-      <h1>Đăng Ký Tài Khoản</h1>
-      <form id="demoForm">
-        <!-- Personal Info -->
-        <div class="section-title" style="margin-top: 0">Thông Tin Cá Nhân</div>
+    <main>
+      <div class="container">
+        <h1>Đăng Ký Tài Khoản</h1>
+        <form id="demoForm">
+          <!-- Personal Info -->
+          <div class="section-title" style="margin-top: 0">Thông Tin Cá Nhân</div>
 
-        <div class="form-group">
-          <label for="fullName">Họ và tên</label>
-          <input type="text" id="fullName" name="fullName" placeholder="Nguyễn Văn A" />
-        </div>
-        <div class="form-group">
-          <label for="dob">Ngày sinh</label>
-          <input type="date" id="dob" name="dob" />
-        </div>
-        <div class="form-group">
-          <label>Giới tính</label>
-          <div class="radio-group">
-            <label><input type="radio" name="gender" value="male" /> Nam</label>
-            <label><input type="radio" name="gender" value="female" /> Nữ</label>
+          <div class="form-group">
+            <label for="fullName">Họ và tên</label>
+            <input type="text" id="fullName" name="fullName" placeholder="Nguyễn Văn A" />
           </div>
-        </div>
-
-        <div class="form-group">
-          <label for="email">Địa chỉ Email</label>
-          <input type="email" id="email" name="email" placeholder="nguyenvana@example.com" />
-        </div>
-        <div class="form-group">
-          <label for="phone">Số điện thoại</label>
-          <input type="tel" id="phone" name="phone" placeholder="0901234567" />
-        </div>
-        <div class="form-group"></div>
-        <!-- Spacer -->
-
-        <!-- Address -->
-        <div class="section-title">Địa Chỉ Liên Hệ</div>
-
-        <div class="form-group span-2">
-          <label for="address">Địa chỉ nhà (Số nhà, tên đường)</label>
-          <input type="text" id="address" name="address" placeholder="123 Đường Nguyễn Huệ" />
-        </div>
-        <div class="form-group">
-          <label for="city">Tỉnh / Thành phố</label>
-          <select id="city" name="city">
-            <option value="">Chọn Tỉnh/Thành</option>
-            <option value="Hanoi">Hà Nội</option>
-            <option value="HCM">TP. Hồ Chí Minh</option>
-            <option value="Danang">Đà Nẵng</option>
-            <option value="Cantho">Cần Thơ</option>
-            <option value="Haiphong">Hải Phòng</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="district">Quận / Huyện</label>
-          <input type="text" id="district" name="district" placeholder="Quận 1" />
-        </div>
-        <div class="form-group">
-          <label for="ward">Phường / Xã</label>
-          <input type="text" id="ward" name="ward" placeholder="Phường Bến Nghé" />
-        </div>
-        <div class="form-group">
-          <label for="zip">Mã bưu chính</label>
-          <input type="text" id="zip" name="zip" placeholder="700000" />
-        </div>
-
-        <!-- Account -->
-        <div class="section-title">Thông Tin Tài Khoản</div>
-
-        <div class="form-group">
-          <label for="username">Tên đăng nhập</label>
-          <input type="text" id="username" name="username" />
-        </div>
-        <div class="form-group">
-          <label for="password">Mật khẩu</label>
-          <input type="password" id="password" name="password" />
-        </div>
-        <div class="form-group">
-          <label for="confirmPassword">Xác nhận mật khẩu</label>
-          <input type="password" id="confirmPassword" name="confirmPassword" />
-        </div>
-
-        <div class="form-group full-width">
-          <label for="note">Ghi chú thêm</label>
-          <textarea id="note" name="note" rows="2" placeholder="Nhập ghi chú của bạn..."></textarea>
-        </div>
-
-        <div class="form-group span-2">
-          <label>Sở thích</label>
-          <div class="checkbox-group">
-            <label><input type="checkbox" name="interests" value="travel" /> Du lịch</label>
-            <label><input type="checkbox" name="interests" value="reading" /> Đọc sách</label>
-            <label><input type="checkbox" name="interests" value="sports" /> Thể thao</label>
+          <div class="form-group">
+            <label for="dob">Ngày sinh</label>
+            <input type="date" id="dob" name="dob" />
           </div>
-        </div>
-        <div class="form-group">
-          <label>&nbsp;</label>
-          <div class="checkbox-group">
-            <label><input type="checkbox" name="terms" /> Đồng ý điều khoản</label>
+          <div class="form-group">
+            <label>Giới tính</label>
+            <div class="radio-group">
+              <label><input type="radio" name="gender" value="male" /> Nam</label>
+              <label><input type="radio" name="gender" value="female" /> Nữ</label>
+            </div>
           </div>
-        </div>
 
-        <button type="submit" onclick="event.preventDefault()">Đăng Ký Ngay</button>
-      </form>
-    </div>
+          <div class="form-group">
+            <label for="email">Địa chỉ Email</label>
+            <input type="email" id="email" name="email" placeholder="nguyenvana@example.com" />
+          </div>
+          <div class="form-group">
+            <label for="phone">Số điện thoại</label>
+            <input type="tel" id="phone" name="phone" placeholder="0901234567" />
+          </div>
+          <div class="form-group"></div>
+          <!-- Spacer -->
+
+          <!-- Address -->
+          <div class="section-title">Địa Chỉ Liên Hệ</div>
+
+          <div class="form-group span-2">
+            <label for="address">Địa chỉ nhà (Số nhà, tên đường)</label>
+            <input type="text" id="address" name="address" placeholder="123 Đường Nguyễn Huệ" />
+          </div>
+          <div class="form-group">
+            <label for="city">Tỉnh / Thành phố</label>
+            <select id="city" name="city">
+              <option value="">Chọn Tỉnh/Thành</option>
+              <option value="Hanoi">Hà Nội</option>
+              <option value="HCM">TP. Hồ Chí Minh</option>
+              <option value="Danang">Đà Nẵng</option>
+              <option value="Cantho">Cần Thơ</option>
+              <option value="Haiphong">Hải Phòng</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="district">Quận / Huyện</label>
+            <input type="text" id="district" name="district" placeholder="Quận 1" />
+          </div>
+          <div class="form-group">
+            <label for="ward">Phường / Xã</label>
+            <input type="text" id="ward" name="ward" placeholder="Phường Bến Nghé" />
+          </div>
+          <div class="form-group">
+            <label for="zip">Mã bưu chính</label>
+            <input type="text" id="zip" name="zip" placeholder="700000" />
+          </div>
+
+          <!-- Account -->
+          <div class="section-title">Thông Tin Tài Khoản</div>
+
+          <div class="form-group">
+            <label for="username">Tên đăng nhập</label>
+            <input type="text" id="username" name="username" />
+          </div>
+          <div class="form-group">
+            <label for="password">Mật khẩu</label>
+            <input type="password" id="password" name="password" />
+          </div>
+          <div class="form-group">
+            <label for="confirmPassword">Xác nhận mật khẩu</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" />
+          </div>
+
+          <div class="form-group full-width">
+            <label for="note">Ghi chú thêm</label>
+            <textarea
+              id="note"
+              name="note"
+              rows="2"
+              placeholder="Nhập ghi chú của bạn..."
+            ></textarea>
+          </div>
+
+          <div class="form-group span-2">
+            <label>Sở thích</label>
+            <div class="checkbox-group">
+              <label><input type="checkbox" name="interests" value="travel" /> Du lịch</label>
+              <label><input type="checkbox" name="interests" value="reading" /> Đọc sách</label>
+              <label><input type="checkbox" name="interests" value="sports" /> Thể thao</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>&nbsp;</label>
+            <div class="checkbox-group">
+              <label><input type="checkbox" name="terms" /> Đồng ý điều khoản</label>
+            </div>
+          </div>
+
+          <button type="submit" onclick="event.preventDefault()">Đăng Ký Ngay</button>
+        </form>
+      </div>
+    </main>
   </body>
 </html>

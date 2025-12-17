@@ -176,110 +176,117 @@
       >
       first. Then right-click and select 'Form Filler > Fill all inputs'.
     </div>
-    <div class="container">
-      <h1>Registration Form</h1>
-      <form id="demoForm">
-        <!-- Personal Info -->
-        <div class="section-title" style="margin-top: 0">Personal Information</div>
+    <main>
+      <div class="container">
+        <h1>Registration Form</h1>
+        <form id="demoForm">
+          <!-- Personal Info -->
+          <div class="section-title" style="margin-top: 0">Personal Information</div>
 
-        <div class="form-group">
-          <label for="firstName">First Name</label>
-          <input type="text" id="firstName" name="firstName" placeholder="John" />
-        </div>
-        <div class="form-group">
-          <label for="lastName">Last Name</label>
-          <input type="text" id="lastName" name="lastName" placeholder="Doe" />
-        </div>
-        <div class="form-group">
-          <label for="dob">Date of Birth</label>
-          <input type="date" id="dob" name="dob" />
-        </div>
-
-        <div class="form-group">
-          <label for="email">Email Address</label>
-          <input type="email" id="email" name="email" placeholder="john@example.com" />
-        </div>
-        <div class="form-group">
-          <label for="phone">Phone Number</label>
-          <input type="tel" id="phone" name="phone" placeholder="+1 (555) 000-0000" />
-        </div>
-        <div class="form-group">
-          <label>Gender</label>
-          <div class="radio-group">
-            <label><input type="radio" name="gender" value="male" /> Male</label>
-            <label><input type="radio" name="gender" value="female" /> Female</label>
+          <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" name="firstName" placeholder="John" />
           </div>
-        </div>
-
-        <!-- Address -->
-        <div class="section-title">Address Details</div>
-
-        <div class="form-group span-2">
-          <label for="address">Street Address</label>
-          <input type="text" id="address" name="address" placeholder="123 Main St" />
-        </div>
-        <div class="form-group">
-          <label for="city">City</label>
-          <input type="text" id="city" name="city" />
-        </div>
-
-        <div class="form-group">
-          <label for="state">State/Province</label>
-          <input type="text" id="state" name="state" />
-        </div>
-        <div class="form-group">
-          <label for="zip">Zip Code</label>
-          <input type="text" id="zip" name="zip" />
-        </div>
-        <div class="form-group">
-          <label for="country">Country</label>
-          <select id="country" name="country">
-            <option value="">Select Country</option>
-            <option value="US">United States</option>
-            <option value="UK">United Kingdom</option>
-            <option value="CA">Canada</option>
-            <option value="AU">Australia</option>
-          </select>
-        </div>
-
-        <!-- Account -->
-        <div class="section-title">Account Setup</div>
-
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input type="text" id="username" name="username" />
-        </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" />
-        </div>
-        <div class="form-group">
-          <label for="confirmPassword">Confirm Password</label>
-          <input type="password" id="confirmPassword" name="confirmPassword" />
-        </div>
-
-        <div class="form-group full-width">
-          <label for="bio">Short Bio</label>
-          <textarea id="bio" name="bio" rows="2" placeholder="Tell us about yourself..."></textarea>
-        </div>
-
-        <div class="form-group span-2">
-          <label>Interests</label>
-          <div class="checkbox-group">
-            <label><input type="checkbox" name="interests" value="tech" /> Tech</label>
-            <label><input type="checkbox" name="interests" value="design" /> Design</label>
-            <label><input type="checkbox" name="interests" value="business" /> Business</label>
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" name="lastName" placeholder="Doe" />
           </div>
-        </div>
-        <div class="form-group">
-          <label>&nbsp;</label>
-          <div class="checkbox-group">
-            <label><input type="checkbox" name="terms" /> I agree to Terms</label>
+          <div class="form-group">
+            <label for="dob">Date of Birth</label>
+            <input type="date" id="dob" name="dob" />
           </div>
-        </div>
 
-        <button type="submit" onclick="event.preventDefault()">Register Account</button>
-      </form>
-    </div>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="john@example.com" />
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" placeholder="+1 (555) 000-0000" />
+          </div>
+          <div class="form-group">
+            <label>Gender</label>
+            <div class="radio-group">
+              <label><input type="radio" name="gender" value="male" /> Male</label>
+              <label><input type="radio" name="gender" value="female" /> Female</label>
+            </div>
+          </div>
+
+          <!-- Address -->
+          <div class="section-title">Address Details</div>
+
+          <div class="form-group span-2">
+            <label for="address">Street Address</label>
+            <input type="text" id="address" name="address" placeholder="123 Main St" />
+          </div>
+          <div class="form-group">
+            <label for="city">City</label>
+            <input type="text" id="city" name="city" />
+          </div>
+
+          <div class="form-group">
+            <label for="state">State/Province</label>
+            <input type="text" id="state" name="state" />
+          </div>
+          <div class="form-group">
+            <label for="zip">Zip Code</label>
+            <input type="text" id="zip" name="zip" />
+          </div>
+          <div class="form-group">
+            <label for="country">Country</label>
+            <select id="country" name="country">
+              <option value="">Select Country</option>
+              <option value="US">United States</option>
+              <option value="UK">United Kingdom</option>
+              <option value="CA">Canada</option>
+              <option value="AU">Australia</option>
+            </select>
+          </div>
+
+          <!-- Account -->
+          <div class="section-title">Account Setup</div>
+
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" />
+          </div>
+          <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" />
+          </div>
+
+          <div class="form-group full-width">
+            <label for="bio">Short Bio</label>
+            <textarea
+              id="bio"
+              name="bio"
+              rows="2"
+              placeholder="Tell us about yourself..."
+            ></textarea>
+          </div>
+
+          <div class="form-group span-2">
+            <label>Interests</label>
+            <div class="checkbox-group">
+              <label><input type="checkbox" name="interests" value="tech" /> Tech</label>
+              <label><input type="checkbox" name="interests" value="design" /> Design</label>
+              <label><input type="checkbox" name="interests" value="business" /> Business</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>&nbsp;</label>
+            <div class="checkbox-group">
+              <label><input type="checkbox" name="terms" /> I agree to Terms</label>
+            </div>
+          </div>
+
+          <button type="submit" onclick="event.preventDefault()">Register Account</button>
+        </form>
+      </div>
+    </main>
   </body>
 </html>
