@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Form Filler Demo - Japanese</title>
+    <style>
+        .banner {
+          background-color: #3b82f6;
+          color: white;
+          text-align: center;
+          padding: 12px;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 1000;
+          font-weight: 500;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        body {
+          font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+          color: #333;
+          margin: 0;
+          padding: 80px 20px 20px;
+          background-color: #f1f5f9;
+          min-height: 100vh;
+          box-sizing: border-box;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .container {
+          background: white;
+          padding: 25px 35px;
+          border-radius: 16px;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+          width: 100%;
+          max-width: 1000px;
+        }
+        h1 {
+          text-align: center;
+          color: #1e293b;
+          margin: 0 0 25px 0;
+          font-size: 1.5rem;
+          font-weight: 800;
+        }
+        form {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 15px 20px;
+        }
+        .section-title {
+          grid-column: 1 / -1;
+          border-bottom: 1px solid #e2e8f0;
+          padding-bottom: 8px;
+          margin: 10px 0 5px;
+          font-size: 0.95rem;
+          font-weight: 700;
+          color: #64748b;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+        .form-group {
+          margin-bottom: 0;
+        }
+        .full-width {
+          grid-column: 1 / -1;
+        }
+        .span-2 {
+          grid-column: span 2;
+        }
+
+        label {
+          display: block;
+          margin-bottom: 5px;
+          font-size: 0.8rem;
+          font-weight: 600;
+          color: #475569;
+        }
+        input,
+        select,
+        textarea {
+          width: 100%;
+          padding: 8px 12px;
+          border: 1px solid #cbd5e1;
+          border-radius: 6px;
+          font-size: 0.9rem;
+          box-sizing: border-box;
+          transition: all 0.2s;
+          background: #f8fafc;
+        }
+        input:focus,
+        select:focus,
+        textarea:focus {
+          outline: none;
+          border-color: #2563eb;
+          background: white;
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        input[type='checkbox'],
+        input[type='radio'] {
+          width: auto;
+        }
+        textarea {
+          resize: vertical;
+          min-height: 60px;
+        }
+
+        .checkbox-group,
+        .radio-group {
+          display: flex;
+          gap: 15px;
+          align-items: center;
+          height: 38px;
+        }
+        .checkbox-group label,
+        .radio-group label {
+          margin-bottom: 0;
+          font-weight: normal;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+        }
+
+        button {
+          grid-column: 1 / -1;
+          background: #2563eb;
+          color: white;
+          border: none;
+          padding: 12px;
+          border-radius: 8px;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          margin-top: 15px;
+          transition: background 0.2s;
+        }
+        button:hover {
+          background: #1d4ed8;
+        }
+
+        @media (max-width: 768px) {
+          form {
+            grid-tbanner">
+        このデモを試すには、まず<a href="https://github.com/thuyydt/formfiller" style="color: white; text-decoration: underline; font-weight: bold;">Form Filler拡張機能</a>をインストールしてください。その後、右クリックして「Form Filler > Fill all inputs」を選択してください。
+      </div>
+      <div class="emplate-columns: 1fr;
+          }
+          .span-2 {
+            grid-column: 1;
+          }
+          body {
+            height: auto;
+            align-items: flex-start;
+          }
+        }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>会員登録フォーム</h1>
+      <form id="demoForm">
+        <!-- Basic Info -->
+        <div class="section-title" style="margin-top: 0">基本情報</div>
+
+        <div class="form-group">
+          <label for="lastName">姓 (漢字)</label>
+          <input type="text" id="lastName" name="lastName" placeholder="山田" />
+        </div>
+        <div class="form-group">
+          <label for="firstName">名 (漢字)</label>
+          <input type="text" id="firstName" name="firstName" placeholder="太郎" />
+        </div>
+        <div class="form-group">
+          <label for="dob">生年月日</label>
+          <input type="date" id="dob" name="dob" />
+        </div>
+
+        <div class="form-group">
+          <label for="lastNameKana">セイ (カタカナ)</label>
+          <input type="text" id="lastNameKana" name="lastNameKana" placeholder="ヤマダ" />
+        </div>
+        <div class="form-group">
+          <label for="firstNameKana">メイ (カタカナ)</label>
+          <input type="text" id="firstNameKana" name="firstNameKana" placeholder="タロウ" />
+        </div>
+        <div class="form-group">
+          <label>性別</label>
+          <div class="radio-group">
+            <label><input type="radio" name="gender" value="male" /> 男性</label>
+            <label><input type="radio" name="gender" value="female" /> 女性</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">メールアドレス</label>
+          <input type="email" id="email" name="email" placeholder="taro.yamada@example.jp" />
+        </div>
+        <div class="form-group">
+          <label for="phone">電話番号</label>
+          <input type="tel" id="phone" name="phone" placeholder="090-1234-5678" />
+        </div>
+        <div class="form-group"></div>
+        <!-- Spacer -->
+
+        <!-- Address -->
+        <div class="section-title">住所</div>
+
+        <div class="form-group">
+          <label for="zip">郵便番号</label>
+          <input type="text" id="zip" name="zip" placeholder="100-0001" />
+        </div>
+        <div class="form-group">
+          <label for="prefecture">都道府県</label>
+          <select id="prefecture" name="prefecture">
+            <option value="">選択してください</option>
+            <option value="Tokyo">東京都</option>
+            <option value="Osaka">大阪府</option>
+            <option value="Kyoto">京都府</option>
+            <option value="Hokkaido">北海道</option>
+            <option value="Fukuoka">福岡県</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="city">市区町村</label>
+          <input type="text" id="city" name="city" placeholder="千代田区千代田" />
+        </div>
+
+        <div class="form-group span-2">
+          <label for="address">番地</label>
+          <input type="text" id="address" name="address" placeholder="1-1" />
+        </div>
+        <div class="form-group">
+          <label for="building">建物名・部屋番号</label>
+          <input type="text" id="building" name="building" placeholder="パレスサイドビル 101" />
+        </div>
+
+        <!-- Account -->
+        <div class="section-title">アカウント情報</div>
+
+        <div class="form-group">
+          <label for="username">ユーザー名</label>
+          <input type="text" id="username" name="username" />
+        </div>
+        <div class="form-group">
+          <label for="password">パスワード</label>
+          <input type="password" id="password" name="password" />
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">パスワード（確認）</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" />
+        </div>
+
+        <div class="form-group full-width">
+          <label for="inquiry">お問い合わせ内容 / 自己紹介</label>
+          <textarea id="inquiry" name="inquiry" rows="2"></textarea>
+        </div>
+
+        <div class="form-group span-2">
+          <label>&nbsp;</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="newsletter" /> ニュースレターを購読する</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>&nbsp;</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="terms" /> 利用規約に同意する</label>
+          </div>
+        </div>
+
+        <button type="submit" onclick="event.preventDefault();">登録する</button>
+      </form>
+    </div>
+  </body>
+</html>

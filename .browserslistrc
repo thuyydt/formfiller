@@ -1,0 +1,6 @@
+# Chrome Extensions minimum version
+chrome >= 88
+# Firefox Extensions minimum version  
+firefox >= 91
+# Safari Web Extensions minimum version
+safari >= 14

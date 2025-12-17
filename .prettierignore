@@ -1,0 +1,13 @@
+node_modules/
+dist-chrome/
+dist-firefox/
+coverage/
+*.bundle.js
+package-lock.json
+yarn.lock
+.vscode/
+.git/
+.github/
+*.min.js
+*.md
+lib/

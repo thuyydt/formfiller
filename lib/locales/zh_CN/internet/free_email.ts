@@ -1,0 +1,18 @@
+export default [
+  '126.com',
+  '139.com',
+  '163.com',
+  '21cn.com',
+  'foxmail.com',
+  'gmail.com',
+  'hotmail.com',
+  'outlook.com',
+  'qq.com',
+  'sina.com',
+  'sohu.com',
+  'tom.com',
+  'vip.qq.com',
+  'yahoo.cn',
+  'yahoo.com.cn',
+  'yeah.net',
+];

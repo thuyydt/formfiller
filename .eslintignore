@@ -1,0 +1,12 @@
+node_modules/
+dist/
+dist-chrome/
+dist-firefox/
+dist-safari/
+coverage/
+*.bundle.js
+lib/
+*.min.js
+jest.config.js
+.eslintrc.js
+.prettierrc.js
