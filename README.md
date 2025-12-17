@@ -1,6 +1,5 @@
 # Form Filler Browser Extension
 
-[![Tests](https://github.com/thuyydt/formfiller/actions/workflows/test.yml/badge.svg)](https://github.com/thuyydt/formfiller/actions/workflows/test.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
 [![Code Coverage](https://img.shields.io/badge/coverage-70%25+-green.svg)](./coverage)
