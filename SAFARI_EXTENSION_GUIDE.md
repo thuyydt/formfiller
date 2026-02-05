@@ -47,22 +47,30 @@ Click **Next** and choose save location.
 After project creation, you'll see a folder structure like:
 ```
 Form Filler/
-├── Form Filler/           (Main app)
-└── Form Filler Extension/ (Extension code - REPLACE THIS)
+├── Form Filler.xcodeproj
+├── Shared (App)/           (Shared app code)
+├── Shared (Extension)/     (Extension code - REPLACE Resources HERE)
+│   ├── Resources/          ← Copy dist-safari/* contents here
+│   └── SafariWebExtensionHandler.swift
+├── iOS (App)/
+├── iOS (Extension)/
+├── macOS (App)/
+└── macOS (Extension)/
 ```
 
 **Replace the extension:**
 ```bash
-# Assuming you saved Xcode project to ~/Developer/Form-Filler-Safari/
-cd ~/Developer/Form-Filler-Safari/
-rm -rf "Form Filler Extension"/*
-cp -r /path/to/your/project/dist-safari/* "Form Filler Extension/"
+# Assuming you saved Xcode project to ~/Developer/form-filler-safari/Form Filler/
+cd ~/Developer/form-filler-safari/Form\ Filler/Shared\ \(Extension\)/Resources/
+rm -rf *
+cp -r /path/to/your/project/dist-safari/* .
 ```
 
 Or manually:
 1. Open Finder and navigate to your Xcode project
-2. Delete all files in `Form Filler Extension/` folder (keep the folder itself)
-3. Copy all contents from `dist-safari/` to `Form Filler Extension/`
+2. Go to `Shared (Extension)/Resources/` folder
+3. Delete all files in `Resources/` folder
+4. Copy all contents from `dist-safari/` to `Resources/`
 
 ### Step 3: Configure Xcode Project
 

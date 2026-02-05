@@ -24,6 +24,10 @@ cp -r dist dist-safari
 echo "📝 Using Safari manifest..."
 cp manifest.safari.json dist-safari/manifest.json
 
+# Replace icons with Safari-specific icons (with solid background to avoid template mode)
+echo "🎨 Replacing icons with Safari-optimized versions..."
+cp icons-safari/* dist-safari/icons/
+
 echo "✅ Safari Web Extension build complete!"
 echo "📁 Extension folder: dist-safari/"
 echo ""
