@@ -7,9 +7,7 @@ module.exports = {
     jest: true,
     webextensions: true
   },
-  extends: [
-    'eslint:recommended'
-  ],
+  extends: ['eslint:recommended'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',
@@ -30,17 +28,20 @@ module.exports = {
         '@typescript-eslint/no-explicit-any': 'warn',
         '@typescript-eslint/explicit-function-return-type': 'off',
         '@typescript-eslint/explicit-module-boundary-types': 'off',
-        '@typescript-eslint/no-unused-vars': ['warn', {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_'
-        }]
+        '@typescript-eslint/no-unused-vars': [
+          'warn',
+          {
+            argsIgnorePattern: '^_',
+            varsIgnorePattern: '^_'
+          }
+        ]
       }
     },
     {
       files: ['components/**/*.ts'],
       rules: {
         '@typescript-eslint/unbound-method': 'off',
-        'indent': 'off',
+        indent: 'off',
         '@typescript-eslint/no-unsafe-assignment': 'off',
         '@typescript-eslint/no-unsafe-member-access': 'off'
       }
@@ -65,17 +66,23 @@ module.exports = {
     }
   ],
   rules: {
-    'indent': ['error', 2],
+    indent: ['error', 2],
     'linebreak-style': ['error', 'unix'],
-    'quotes': ['error', 'single'],
-    'semi': ['error', 'always'],
-    'no-unused-vars': ['warn', { 
-      argsIgnorePattern: '^_',
-      varsIgnorePattern: '^_' 
-    }],
-    'no-console': ['warn', { 
-      allow: ['warn', 'error'] 
-    }],
+    quotes: ['error', 'single'],
+    semi: ['error', 'always'],
+    'no-unused-vars': [
+      'warn',
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_'
+      }
+    ],
+    'no-console': [
+      'warn',
+      {
+        allow: ['warn', 'error']
+      }
+    ],
     'no-debugger': 'warn',
     'prefer-const': 'error',
     'no-var': 'error',
@@ -83,11 +90,14 @@ module.exports = {
     'comma-dangle': ['error', 'never'],
     'object-curly-spacing': ['error', 'always'],
     'array-bracket-spacing': ['error', 'never'],
-    'space-before-function-paren': ['error', {
-      anonymous: 'always',
-      named: 'never',
-      asyncArrow: 'always'
-    }],
+    'space-before-function-paren': [
+      'error',
+      {
+        anonymous: 'always',
+        named: 'never',
+        asyncArrow: 'always'
+      }
+    ],
     'keyword-spacing': 'error',
     'space-infix-ops': 'error',
     'eol-last': ['error', 'always'],

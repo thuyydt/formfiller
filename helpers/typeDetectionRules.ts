@@ -2,13 +2,22 @@
 // Centralized configuration for field type detection rules
 // This makes it easy to add, modify, or remove detection patterns without touching the logic
 
+// ============ Types ============
+
 /**
  * Detection rule for a specific field type
  */
 interface DetectionRule {
+  /** Unique field type identifier */
   type: string;
+  /** Keywords to match in field attributes */
   keywords: string[];
+  /** Optional array of types that should exclude this match */
   excludeTypes?: string[];
+  /** Priority for rule matching (higher = checked first, default 10) */
+  priority?: number;
+  /** Negative patterns that should NOT match for this type */
+  negativeKeywords?: string[];
 }
 
 /**
@@ -17,6 +26,8 @@ interface DetectionRule {
  * - type: The field type identifier
  * - keywords: Array of keywords to match in field attributes
  * - excludeTypes: Optional array of types that should exclude this match
+ * - priority: Optional priority for rule matching (higher = checked first)
+ * - negativeKeywords: Optional negative patterns that should NOT match
  */
 interface DetectionRulesConfig {
   textInputTypes: DetectionRule[];
@@ -25,13 +36,37 @@ interface DetectionRulesConfig {
   nativeTypeMapping: Record<string, string>;
 }
 
+/**
+ * Element attributes used for detection
+ */
+interface ElementAttributes {
+  type: string;
+  placeholder: string;
+  ariaLabel: string;
+  label: string;
+  name: string;
+  id: string;
+  classList: string;
+  dataAttributes: string;
+  namePart: string;
+  idPart: string;
+  classPart: string;
+  placeholderPart: string;
+  ariaLabelPart: string;
+  labelPart: string;
+  dataAttributesPart: string;
+}
+
+// ============ Rules Configuration ============
+
 export const detectionRules: DetectionRulesConfig = {
   // Text input field types (checked for type='text' and type='number')
-  // NOTE: Order matters! More specific patterns should come before general ones
+  // NOTE: Order and priority matters! More specific patterns should have higher priority
   textInputTypes: [
     // Email should be checked before address since "address" can match in "email-address"
     {
       type: 'email',
+      priority: 20,
       keywords: [
         'email',
         'emailaddress',
@@ -43,10 +78,12 @@ export const detectionRules: DetectionRulesConfig = {
         'e_mail',
         'e-mailaddress',
         'e_mail_address'
-      ]
+      ],
+      negativeKeywords: ['postal', 'physical', 'street', 'home', 'work']
     },
     {
       type: 'username',
+      priority: 15,
       keywords: [
         'username',
         'user_name',
@@ -56,19 +93,21 @@ export const detectionRules: DetectionRulesConfig = {
         'userID',
         'user_id',
         'userid',
-        'user',
         'userlogin',
         'user_login',
         'useraccount',
         'user_account'
-      ]
+      ],
+      negativeKeywords: ['name', 'email']
     },
     {
       type: 'first_name',
+      priority: 18,
       keywords: ['firstname', 'first_name', 'givenname', 'given_name', 'forename', 'fore_name']
     },
     {
       type: 'last_name',
+      priority: 18,
       keywords: [
         'lastname',
         'last_name',
@@ -82,11 +121,11 @@ export const detectionRules: DetectionRulesConfig = {
     },
     {
       type: 'name',
+      priority: 10,
       keywords: [
         'name',
         'full_name',
         'fullname',
-        'full_name',
         'yourname',
         'your_name',
         'contactname',
@@ -94,10 +133,11 @@ export const detectionRules: DetectionRulesConfig = {
         'uname',
         'u_name'
       ],
-      excludeTypes: ['first_name', 'last_name'] // Don't match if it's specifically a first/last name
+      excludeTypes: ['first_name', 'last_name', 'username', 'company']
     },
     {
       type: 'phone',
+      priority: 15,
       keywords: [
         'phone',
         'phonenumber',
@@ -131,6 +171,7 @@ export const detectionRules: DetectionRulesConfig = {
     },
     {
       type: 'country',
+      priority: 12,
       keywords: [
         'country',
         'countryname',
@@ -142,6 +183,7 @@ export const detectionRules: DetectionRulesConfig = {
     },
     {
       type: 'city',
+      priority: 12,
       keywords: [
         'city',
         'town',
@@ -149,9 +191,6 @@ export const detectionRules: DetectionRulesConfig = {
         'locality',
         'localityname',
         'locality_name',
-        'district',
-        'districtname',
-        'district_name',
         'suburb',
         'suburbname',
         'suburb_name',
@@ -161,10 +200,12 @@ export const detectionRules: DetectionRulesConfig = {
         'ward',
         'wardname',
         'ward_name'
-      ]
+      ],
+      negativeKeywords: ['state', 'province', 'region']
     },
     {
       type: 'building',
+      priority: 14,
       keywords: [
         'building',
         'buildingname',
@@ -206,6 +247,7 @@ export const detectionRules: DetectionRulesConfig = {
     },
     {
       type: 'room_number',
+      priority: 16,
       keywords: [
         'roomnumber',
         'room_number',
@@ -217,6 +259,7 @@ export const detectionRules: DetectionRulesConfig = {
     },
     {
       type: 'zip',
+      priority: 15,
       keywords: [
         'postalcode',
         'postal_code',
@@ -228,15 +271,15 @@ export const detectionRules: DetectionRulesConfig = {
         'zipname',
         'zip_name',
         'postal',
-        'area_code',
-        'areacode',
         'pin',
         'pincode',
         'pin_code'
-      ]
+      ],
+      negativeKeywords: ['area', 'phone']
     },
     {
       type: 'state',
+      priority: 12,
       keywords: [
         'state',
         'statename',
@@ -265,18 +308,17 @@ export const detectionRules: DetectionRulesConfig = {
         'zone',
         'zonename',
         'zone_name',
-        'area',
-        'areaname',
-        'area_name',
         'division',
         'divisionname',
         'division_name',
         'subdivision',
         'subdivisionname'
-      ]
+      ],
+      negativeKeywords: ['city', 'town', 'locality']
     },
     {
       type: 'birth_year',
+      priority: 16,
       keywords: [
         'birthyear',
         'birth_year',
@@ -290,10 +332,13 @@ export const detectionRules: DetectionRulesConfig = {
     },
     {
       type: 'year',
-      keywords: ['year', 'yearnum', 'year_num']
+      priority: 8,
+      keywords: ['year', 'yearnum', 'year_num'],
+      excludeTypes: ['birth_year']
     },
     {
       type: 'birth_month',
+      priority: 16,
       keywords: [
         'birthmonth',
         'birth_month',
@@ -307,10 +352,13 @@ export const detectionRules: DetectionRulesConfig = {
     },
     {
       type: 'month',
-      keywords: ['month', 'monthnum', 'month_num']
+      priority: 8,
+      keywords: ['month', 'monthnum', 'month_num'],
+      excludeTypes: ['birth_month']
     },
     {
       type: 'birthdate',
+      priority: 16,
       keywords: [
         'birthdate',
         'birth_date',
@@ -328,18 +376,24 @@ export const detectionRules: DetectionRulesConfig = {
     },
     {
       type: 'date',
-      keywords: ['date', 'datepicker', 'date_picker']
+      priority: 8,
+      keywords: ['date', 'datepicker', 'date_picker'],
+      excludeTypes: ['birthdate']
     },
     {
       type: 'birth_day',
+      priority: 16,
       keywords: ['birth_day', 'dayofbirth', 'day_of_birth', 'dobday', 'dob_day']
     },
     {
       type: 'day',
-      keywords: ['day', 'daynum', 'day_num']
+      priority: 8,
+      keywords: ['day', 'daynum', 'day_num'],
+      excludeTypes: ['birth_day']
     },
     {
       type: 'time',
+      priority: 10,
       keywords: [
         'time',
         'timepicker',
@@ -352,6 +406,7 @@ export const detectionRules: DetectionRulesConfig = {
     },
     {
       type: 'url',
+      priority: 12,
       keywords: [
         'url',
         'website',
@@ -365,10 +420,12 @@ export const detectionRules: DetectionRulesConfig = {
         'web_page',
         'site',
         'link'
-      ]
+      ],
+      negativeKeywords: ['email', 'address']
     },
     {
       type: 'po_box',
+      priority: 14,
       keywords: [
         'pobox',
         'po_box',
@@ -386,6 +443,7 @@ export const detectionRules: DetectionRulesConfig = {
     },
     {
       type: 'color',
+      priority: 10,
       keywords: [
         'color',
         'colour',
@@ -404,6 +462,7 @@ export const detectionRules: DetectionRulesConfig = {
     },
     {
       type: 'password',
+      priority: 18,
       keywords: [
         'password',
         'pass',
@@ -423,6 +482,7 @@ export const detectionRules: DetectionRulesConfig = {
     },
     {
       type: 'company',
+      priority: 12,
       keywords: [
         'company',
         'organization',
@@ -431,11 +491,15 @@ export const detectionRules: DetectionRulesConfig = {
         'businessname',
         'business_name',
         'corporationname',
-        'corporation_name'
+        'corporation_name',
+        'employer',
+        'firm',
+        'enterprise'
       ]
     },
     {
       type: 'address',
+      priority: 10,
       keywords: [
         'address',
         'address1',
@@ -481,18 +545,22 @@ export const detectionRules: DetectionRulesConfig = {
         'street_address2',
         'streetline2',
         'street_line2'
-      ]
+      ],
+      excludeTypes: ['email', 'ip_address', 'mac_address']
     },
     {
       type: 'ip_address',
+      priority: 14,
       keywords: ['ipaddress', 'ip_address', 'ipv4', 'ipv6', 'ip']
     },
     {
       type: 'mac_address',
-      keywords: ['macaddress', 'mac_address']
+      priority: 14,
+      keywords: ['macaddress', 'mac_address', 'hwaddr', 'hardware_address']
     },
     {
       type: 'credit_card',
+      priority: 16,
       keywords: [
         'creditcard',
         'credit_card',
@@ -506,11 +574,14 @@ export const detectionRules: DetectionRulesConfig = {
         'cc_no',
         'cc',
         'debitcard',
-        'debit_card'
-      ]
+        'debit_card',
+        'pan'
+      ],
+      negativeKeywords: ['cvv', 'cvc', 'expir']
     },
     {
       type: 'credit_card_cvv',
+      priority: 18,
       keywords: [
         'cvv',
         'cvv2',
@@ -527,11 +598,36 @@ export const detectionRules: DetectionRulesConfig = {
       ]
     },
     {
+      type: 'credit_card_expiry',
+      priority: 18,
+      keywords: [
+        'expiry',
+        'expiration',
+        'exp_date',
+        'expirydate',
+        'expiry_date',
+        'cardexpiry',
+        'card_expiry',
+        'exp_month',
+        'exp_year',
+        'mm_yy',
+        'mmyy'
+      ]
+    },
+    {
       type: 'account_name',
-      keywords: ['accountname', 'account_name', 'bankaccountname', 'bank_account_name']
+      priority: 12,
+      keywords: [
+        'accountname',
+        'account_name',
+        'bankaccountname',
+        'bank_account_name',
+        'accountholder'
+      ]
     },
     {
       type: 'account_number',
+      priority: 12,
       keywords: [
         'accountnumber',
         'account_number',
@@ -542,64 +638,83 @@ export const detectionRules: DetectionRulesConfig = {
         'bankaccount',
         'bank_account',
         'bankaccountno',
-        'bank_account_no'
+        'bank_account_no',
+        'routingnumber',
+        'routing_number',
+        'bsb'
       ]
     },
     {
       type: 'sex',
+      priority: 10,
       keywords: ['sex', 'gender', 'pers_sex', 'person_sex']
     },
     {
+      type: 'age',
+      priority: 12,
+      keywords: ['age', 'your_age', 'yourage', 'person_age']
+    },
+    {
       type: 'number',
+      priority: 5,
       keywords: [
-        'age',
         'quantity',
         'count',
         'amount',
         'total',
         'subtotal',
-        'price',
-        'cost',
-        'fee',
-        'charge',
-        'payment',
         'number',
         'num',
         'qty',
         'qnty'
-      ]
+      ],
+      excludeTypes: ['phone', 'credit_card', 'account_number', 'age']
     },
     {
       type: 'emoji',
-      keywords: ['emoji']
+      priority: 8,
+      keywords: ['emoji', 'emoticon']
     },
     {
       type: 'user_agent',
-      keywords: ['useragent', 'user_agent']
+      priority: 8,
+      keywords: ['useragent', 'user_agent', 'browser']
     },
     {
       type: 'currency',
-      keywords: ['currency', 'currency_symbol']
+      priority: 10,
+      keywords: ['currency', 'currency_symbol', 'money_symbol']
     },
     {
       type: 'currency_code',
-      keywords: ['currencycode', 'currency_code', 'currency_iso']
+      priority: 12,
+      keywords: ['currencycode', 'currency_code', 'currency_iso', 'iso_currency']
     },
     {
       type: 'currency_name',
+      priority: 10,
       keywords: ['currencyname', 'currency_name']
     },
     {
       type: 'price',
-      keywords: ['price', 'cost', 'amount', 'total', 'fee', 'charge', 'subtotal']
+      priority: 10,
+      keywords: ['price', 'cost', 'fee', 'charge'],
+      excludeTypes: ['number']
     },
     {
       type: 'latitude',
-      keywords: ['latitude', 'lat']
+      priority: 12,
+      keywords: ['latitude', 'lat', 'geo_lat']
     },
     {
       type: 'longitude',
-      keywords: ['longitude', 'long', 'lng']
+      priority: 12,
+      keywords: ['longitude', 'lng', 'geo_lng', 'geo_long']
+    },
+    {
+      type: 'coordinates',
+      priority: 10,
+      keywords: ['coordinates', 'coords', 'geolocation', 'latlng', 'lat_lng']
     }
   ],
 
@@ -607,6 +722,7 @@ export const detectionRules: DetectionRulesConfig = {
   japaneseTypes: [
     {
       type: 'hiragana',
+      priority: 15,
       keywords: [
         'hiragana',
         'hiragana_name',
@@ -627,6 +743,7 @@ export const detectionRules: DetectionRulesConfig = {
     },
     {
       type: 'katakana',
+      priority: 15,
       keywords: [
         'katakana',
         'katakana_name',
@@ -649,6 +766,7 @@ export const detectionRules: DetectionRulesConfig = {
     },
     {
       type: 'romaji',
+      priority: 15,
       keywords: [
         'romaji',
         'romaji_name',
@@ -698,6 +816,8 @@ export const detectionRules: DetectionRulesConfig = {
   }
 };
 
+// ============ Helper Functions ============
+
 /**
  * Helper function to check if a label matches any keyword in a list
  * @param label - The lowercase label text to check
@@ -705,29 +825,9 @@ export const detectionRules: DetectionRulesConfig = {
  * @returns boolean
  */
 export const matchesKeywords = (label: string, keywords: string[]): boolean => {
+  if (!label) return false;
   return keywords.some(keyword => label.includes(keyword));
 };
-
-/**
- * Element attributes used for detection
- */
-interface ElementAttributes {
-  type: string;
-  placeholder: string;
-  ariaLabel: string;
-  label: string;
-  name: string;
-  id: string;
-  classList: string;
-  dataAttributes: string;
-  namePart: string;
-  idPart: string;
-  classPart: string;
-  placeholderPart: string;
-  ariaLabelPart: string;
-  labelPart: string;
-  dataAttributesPart: string;
-}
 
 /**
  * Check if any of the provided attributes match the given keywords
@@ -759,6 +859,20 @@ export const matchesAnyAttribute = (attrs: ElementAttributes, keywords: string[]
 };
 
 /**
+ * Check if any attribute matches negative keywords (should NOT match)
+ * @param attrs - Element attributes object
+ * @param negativeKeywords - Keywords that should NOT be present
+ * @returns true if negative keywords are found (should reject this rule)
+ */
+export const matchesNegativeKeywords = (
+  attrs: ElementAttributes,
+  negativeKeywords?: string[]
+): boolean => {
+  if (!negativeKeywords || negativeKeywords.length === 0) return false;
+  return matchesAnyAttribute(attrs, negativeKeywords);
+};
+
+/**
  * Check if a field type string matches keywords
  * @param fieldType - The detected field type (e.g., 'address', 'email')
  * @param keywords - Keywords to check against
@@ -777,5 +891,24 @@ export const getKeywordsForType = (type: string): string[] => {
   const rule = detectionRules.textInputTypes.find(r => r.type === type);
   return rule ? rule.keywords : [];
 };
+
+/**
+ * Get rule for a specific field type
+ * @param type - The field type identifier
+ * @returns Detection rule or undefined
+ */
+export const getRuleForType = (type: string): DetectionRule | undefined => {
+  return detectionRules.textInputTypes.find(r => r.type === type);
+};
+
+/**
+ * Get all rules sorted by priority (highest first)
+ * @returns Sorted array of detection rules
+ */
+export const getRulesByPriority = (): DetectionRule[] => {
+  return [...detectionRules.textInputTypes].sort((a, b) => (b.priority ?? 10) - (a.priority ?? 10));
+};
+
+// ============ Exports ============
 
 export type { DetectionRule, DetectionRulesConfig, ElementAttributes };

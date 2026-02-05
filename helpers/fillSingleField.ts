@@ -242,7 +242,8 @@ const triggerFieldEvents = (
     element.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true }));
     element.dispatchEvent(new KeyboardEvent('keypress', { bubbles: true }));
     element.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true }));
-  } catch {
-    // Silently ignore keyboard event errors
+  } catch (error) {
+    // Log keyboard event errors for debugging but don't break the flow
+    logger.debug('Keyboard event dispatch failed in fillSingleField:', error);
   }
 };

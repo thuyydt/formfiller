@@ -16,7 +16,11 @@ export const spanishKeywordMap: [string, string][] = [
   ['número de tarjeta', 'credit_card'],
   ['titular de la tarjeta', 'account_name'],
   ['código de seguridad', 'credit_card_cvv'],
-  ['fecha de vencimiento', 'date'],
+  ['fecha de vencimiento', 'credit_card_expiry'],
+  ['fecha de caducidad', 'credit_card_expiry'],
+  ['número de cuenta', 'account_number'],
+  ['sitio web', 'url'],
+  ['página web', 'url'],
 
   // Medium length
   ['contraseña', 'password'],
@@ -39,8 +43,6 @@ export const spanishKeywordMap: [string, string][] = [
   ['género', 'sex'],
   ['sexo', 'sex'],
   ['edad', 'age'],
-  ['sitio web', 'url'],
-  ['página web', 'url'],
   ['profesión', 'job_title'],
   ['cargo', 'job_title'],
   ['empresa', 'company'],
@@ -48,14 +50,22 @@ export const spanishKeywordMap: [string, string][] = [
   ['departamento', 'department'],
   ['comentarios', 'description'],
   ['mensaje', 'description'],
+  ['descripción', 'description'],
   ['buscar', 'search'],
   ['precio', 'price'],
   ['cantidad', 'number'],
 
-  // Short terms
+  // Short terms (use word boundaries)
   ['fax', 'phone'],
   ['cp', 'zipcode']
 ];
+
+/**
+ * Escape special regex characters in a string
+ */
+const escapeRegex = (str: string): string => {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+};
 
 /**
  * Translate Spanish keywords to English for better pattern matching
@@ -67,9 +77,9 @@ export const translateSpanishKeywords = (text: string): string => {
   let translated = text;
   // Process in order (longest first) to avoid partial matches
   for (const [spanish, english] of spanishKeywordMap) {
-    // Use word boundaries for short words to avoid false positives (e.g. "cp" in "tcp")
-    const regex =
-      spanish.length <= 3 ? new RegExp(`\\b${spanish}\\b`, 'gi') : new RegExp(spanish, 'gi');
+    // Use word boundaries for short words to avoid false positives
+    const pattern = spanish.length <= 3 ? `\\b${escapeRegex(spanish)}\\b` : escapeRegex(spanish);
+    const regex = new RegExp(pattern, 'gi');
 
     if (regex.test(translated)) {
       translated = translated.replace(regex, english);

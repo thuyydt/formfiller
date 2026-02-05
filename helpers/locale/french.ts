@@ -10,14 +10,17 @@ export const frenchKeywordMap: [string, string][] = [
   ['date de naissance', 'birthday'],
   ['numéro de téléphone', 'phone'],
   ['code postal', 'zipcode'],
-  ['nom d\'utilisateur', 'username'],
-  ['nom de l\'entreprise', 'company'],
+  ["nom d'utilisateur", 'username'],
+  ["nom de l'entreprise", 'company'],
   ['numéro de carte', 'credit_card'],
   ['titulaire de la carte', 'account_name'],
   ['code de sécurité', 'credit_card_cvv'],
-  ['date d\'expiration', 'date'],
+  ["date d'expiration", 'credit_card_expiry'],
+  ['date de validité', 'credit_card_expiry'],
   ['adresse e-mail', 'email'],
+  ['adresse électronique', 'email'],
   ['site internet', 'url'],
+  ['numéro de compte', 'account_number'],
 
   // Medium length
   ['courriel', 'email'],
@@ -42,16 +45,24 @@ export const frenchKeywordMap: [string, string][] = [
   ['département', 'department'],
   ['commentaire', 'description'],
   ['message', 'description'],
+  ['description', 'description'],
   ['recherche', 'search'],
   ['prix', 'price'],
   ['quantité', 'number'],
 
-  // Short terms
+  // Short terms (use word boundaries)
   ['nom', 'lastname'],
   ['rue', 'address'],
   ['fax', 'phone'],
   ['cp', 'zipcode']
 ];
+
+/**
+ * Escape special regex characters in a string
+ */
+const escapeRegex = (str: string): string => {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+};
 
 /**
  * Translate French keywords to English for better pattern matching
@@ -63,9 +74,9 @@ export const translateFrenchKeywords = (text: string): string => {
   let translated = text;
   // Process in order (longest first) to avoid partial matches
   for (const [french, english] of frenchKeywordMap) {
-    // Use word boundaries for short words to avoid false positives (e.g. "nom" in "economy")
-    const regex =
-      french.length <= 3 ? new RegExp(`\\b${french}\\b`, 'gi') : new RegExp(french, 'gi');
+    // Use word boundaries for short words to avoid false positives
+    const pattern = french.length <= 3 ? `\\b${escapeRegex(french)}\\b` : escapeRegex(french);
+    const regex = new RegExp(pattern, 'gi');
 
     if (regex.test(translated)) {
       translated = translated.replace(regex, english);

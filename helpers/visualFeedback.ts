@@ -2,6 +2,7 @@
 // Provides visual feedback to users when form filling is complete
 
 import { settingsCache } from './settingsCache';
+import { logger } from './logger.js';
 
 const NOTIFICATION_DURATION = 3000; // 3 seconds
 const HIGHLIGHT_DURATION = 1500; // 1.5 seconds
@@ -212,8 +213,16 @@ const playSuccessSound = async (): Promise<void> => {
 
     oscillator.start(audioContext.currentTime);
     oscillator.stop(audioContext.currentTime + 0.1);
-  } catch {
-    // Silently fail if audio is not supported, blocked, or cache fails
+
+    // Close AudioContext after sound completes to free resources
+    // Browsers have limits on concurrent audio contexts
+    setTimeout(() => {
+      void audioContext.close();
+    }, 200);
+  } catch (error) {
+    // Audio may not be supported, blocked by autoplay policy, or cache fails
+    // This is expected in many environments, so only log at debug level
+    logger.debug('Audio playback failed (this is normal if audio is blocked):', error);
   }
 };
 

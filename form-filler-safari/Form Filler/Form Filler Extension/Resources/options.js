@@ -608,7 +608,7 @@ const e=globalThis,t=e.ShadowRoot&&(void 0===e.ShadyCSS||e.ShadyCSS.nativeShadow
     }
 
     .custom-fields-table select,
-    .custom-fields-table input[type="text"] {
+    .custom-fields-table input[type='text'] {
       width: 100%;
       padding: 6px 8px;
       border-radius: 4px;
@@ -620,7 +620,7 @@ const e=globalThis,t=e.ShadowRoot&&(void 0===e.ShadyCSS||e.ShadyCSS.nativeShadow
     }
 
     .custom-fields-table select:focus,
-    .custom-fields-table input[type="text"]:focus {
+    .custom-fields-table input[type='text']:focus {
       border: 1.5px solid #2d7ff9;
       outline: none;
     }

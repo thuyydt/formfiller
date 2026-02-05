@@ -3,16 +3,14 @@ import type { FormFillerSettings } from '../types';
 import { matchCustomField } from '../helpers/customFieldMatcher.js';
 // import { findClosestLabel } from '../helpers/labelFinder.js';
 import { getAllSelects } from '../helpers/domHelpers.js';
-
-// Helper to check if current domain should be ignored
-const shouldIgnoreDomain = (ignoreDomains = ''): boolean => {
-  const domains = (ignoreDomains || '')
-    .split(/\n|,/)
-    .map(s => s.trim())
-    .filter(Boolean);
-  const currentDomain = window.location.hostname;
-  return domains.some(domain => currentDomain.endsWith(domain));
-};
+import { logger } from '../helpers/logger.js';
+import { shouldIgnoreDomain } from '../helpers/domainUtils.js';
+import { cachedParseIgnoreKeywords } from '../helpers/computedCache.js';
+import {
+  detectSelectType,
+  selectSmartOption,
+  getDetectionConfidence
+} from '../helpers/selectTypeDetection.js';
 
 export const fillSelects = (settings: FormFillerSettings = {}): void => {
   if (shouldIgnoreDomain(settings.ignoreDomains)) {
@@ -25,10 +23,7 @@ export const fillSelects = (settings: FormFillerSettings = {}): void => {
     return;
   }
 
-  const ignoreKeywords = (settings.ignoreFields || '')
-    .split(',')
-    .map(s => s.trim().toLowerCase())
-    .filter(Boolean);
+  const ignoreKeywords = cachedParseIgnoreKeywords(settings.ignoreFields || '');
 
   selects.forEach(select => {
     // const labelText = settings.enableLabelMatching ? findClosestLabel(select) : '';
@@ -110,20 +105,49 @@ export const fillSelects = (settings: FormFillerSettings = {}): void => {
       }
       // Skip default behavior for custom fields
     } else {
-      // Default behavior for selects
+      // Smart select filling based on detected field type
       if (select.options.length > 1) {
-        let validOptions = Array.from(select.options).filter(
-          opt =>
-            !opt.disabled &&
-            opt.value &&
-            opt.value !== '' &&
-            !opt.label.toLowerCase().includes('select')
+        // Detect the type of this select field
+        const detectedType = detectSelectType(select, settings.enableLabelMatching);
+        const confidence = getDetectionConfidence(
+          select,
+          detectedType,
+          settings.enableLabelMatching
         );
-        if (validOptions.length === 0)
-          validOptions = Array.from(select.options).filter(opt => !opt.disabled);
-        const randomOption = validOptions[Math.floor(Math.random() * validOptions.length)];
-        if (randomOption) {
-          select.value = randomOption.value;
+
+        let selectedOption: HTMLOptionElement | null = null;
+        let selectionReason = '';
+
+        // Use smart selection if type was detected with high confidence
+        if (detectedType !== 'unknown' && confidence >= 0.5) {
+          const smartResult = selectSmartOption(
+            select,
+            detectedType,
+            settings.minAge,
+            settings.maxAge
+          );
+
+          if (smartResult) {
+            selectedOption = smartResult.option;
+            selectionReason = `smart: ${detectedType} - ${smartResult.reason}`;
+          }
+        }
+
+        // Fallback to improved random selection if smart selection didn't work
+        if (!selectedOption) {
+          selectedOption = selectRandomValidOption(select);
+          selectionReason = 'random valid option';
+        }
+
+        if (selectedOption) {
+          select.value = selectedOption.value;
+          logger.debug(`Selected option for ${select.name || select.id}:`, {
+            value: selectedOption.value,
+            text: selectedOption.text,
+            detectedType,
+            confidence,
+            reason: selectionReason
+          });
         }
       }
     }
@@ -134,6 +158,62 @@ export const fillSelects = (settings: FormFillerSettings = {}): void => {
     // Trigger events for JavaScript-based forms (React, Vue, Angular, etc.)
     triggerSelectEvents(select);
   });
+};
+
+/**
+ * Select a random valid option from a select element
+ * Filters out placeholder options, disabled options, and common placeholder patterns
+ */
+const selectRandomValidOption = (select: HTMLSelectElement): HTMLOptionElement | null => {
+  const options = Array.from(select.options);
+
+  // First pass: filter out obviously invalid options
+  let validOptions = options.filter(opt => {
+    // Skip disabled options
+    if (opt.disabled) return false;
+
+    // Skip empty value options (often placeholders)
+    if (!opt.value || opt.value.trim() === '') return false;
+
+    // Skip value "0" which is often a placeholder
+    if (opt.value === '0') return false;
+
+    const text = opt.text.toLowerCase().trim();
+    const label = opt.label?.toLowerCase() || '';
+
+    // Skip common placeholder patterns
+    const placeholderPatterns = [
+      /^(select|choose|pick|--|please|none|\*|---).*$/i,
+      /^(selecciona|elegir|choisir|wählen|選択|选择).*$/i, // Multi-language placeholders
+      /^-+$/, // Just dashes
+      /^\s*$/ // Empty or whitespace
+    ];
+
+    for (const pattern of placeholderPatterns) {
+      if (pattern.test(text) || pattern.test(label)) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  // If no valid options found, try with less strict filtering
+  if (validOptions.length === 0) {
+    validOptions = options.filter(opt => !opt.disabled && opt.value);
+  }
+
+  // Still no options? Just get any non-disabled option
+  if (validOptions.length === 0) {
+    validOptions = options.filter(opt => !opt.disabled);
+  }
+
+  if (validOptions.length === 0) {
+    return null;
+  }
+
+  // Select random option from valid ones
+  return validOptions[Math.floor(Math.random() * validOptions.length)] ?? null;
 };
 
 // Helper function to trigger all necessary events for JS frameworks
@@ -157,34 +237,72 @@ const triggerSelectEvents = (element: HTMLSelectElement): void => {
   // For click-based interactions
   try {
     element.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-  } catch {
-    // Silently ignore click event errors
+  } catch (error) {
+    // Log click event errors for debugging but don't break the flow
+    logger.debug('Click event dispatch failed:', error);
+  }
+};
+
+// Store observers for cleanup
+let selectOptionsObserver: MutationObserver | null = null;
+let bodySelectObserver: MutationObserver | null = null;
+
+/**
+ * Cleanup observers when no longer needed
+ */
+export const cleanupSelectObservers = (): void => {
+  if (selectOptionsObserver) {
+    selectOptionsObserver.disconnect();
+    selectOptionsObserver = null;
+    logger.debug('Select options observer disconnected');
+  }
+  if (bodySelectObserver) {
+    bodySelectObserver.disconnect();
+    bodySelectObserver = null;
+    logger.debug('Body observer for selects disconnected');
   }
 };
 
 // Automatically observe and fill selects when their options change
 document.addEventListener('DOMContentLoaded', () => {
-  const observer = new MutationObserver(mutations => {
-    mutations.forEach(mutation => {
-      if (mutation.type === 'childList' && (mutation.target as Element).tagName === 'SELECT') {
-        fillSelects();
-      }
-    });
+  // Cleanup any existing observers first
+  cleanupSelectObservers();
+
+  selectOptionsObserver = new MutationObserver(mutations => {
+    try {
+      mutations.forEach(mutation => {
+        if (mutation.type === 'childList' && (mutation.target as Element).tagName === 'SELECT') {
+          fillSelects();
+        }
+      });
+    } catch (error) {
+      logger.warn('Error in select options observer:', error);
+    }
   });
 
   document.querySelectorAll('select').forEach(select => {
-    observer.observe(select, { childList: true });
+    selectOptionsObserver?.observe(select, { childList: true });
   });
 
   // Also observe for new selects added to the DOM
-  const bodyObserver = new MutationObserver(mutations => {
-    mutations.forEach(mutation => {
-      mutation.addedNodes.forEach(node => {
-        if (node.nodeType === 1 && (node as Element).tagName === 'SELECT') {
-          observer.observe(node as HTMLSelectElement, { childList: true });
-        }
+  bodySelectObserver = new MutationObserver(mutations => {
+    try {
+      mutations.forEach(mutation => {
+        mutation.addedNodes.forEach(node => {
+          if (node.nodeType === 1 && (node as Element).tagName === 'SELECT') {
+            selectOptionsObserver?.observe(node as HTMLSelectElement, { childList: true });
+          }
+        });
       });
-    });
+    } catch (error) {
+      logger.warn('Error in body observer for selects:', error);
+    }
   });
-  bodyObserver.observe(document.body, { childList: true, subtree: true });
+  bodySelectObserver.observe(document.body, { childList: true, subtree: true });
 });
+
+// Cleanup on page unload
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeunload', cleanupSelectObservers);
+  window.addEventListener('pagehide', cleanupSelectObservers);
+}

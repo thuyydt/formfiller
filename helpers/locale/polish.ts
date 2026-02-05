@@ -15,7 +15,12 @@ export const polishKeywordMap: [string, string][] = [
   ['numer karty', 'credit_card'],
   ['właściciel karty', 'account_name'],
   ['kod bezpieczeństwa', 'credit_card_cvv'],
-  ['data ważności', 'date'],
+  ['data ważności', 'credit_card_expiry'],
+  ['data wygaśnięcia', 'credit_card_expiry'],
+  ['numer konta', 'account_number'],
+  ['strona internetowa', 'url'],
+  ['strona www', 'url'],
+  ['adres e-mail', 'email'],
 
   // Medium length
   ['hasło', 'password'],
@@ -23,7 +28,6 @@ export const polishKeywordMap: [string, string][] = [
   ['imię', 'firstname'],
   ['telefon', 'phone'],
   ['komórka', 'phone'],
-  ['adres e-mail', 'email'],
   ['adres', 'address'],
   ['miasto', 'city'],
   ['miejscowość', 'city'],
@@ -32,26 +36,32 @@ export const polishKeywordMap: [string, string][] = [
   ['kraj', 'country'],
   ['płeć', 'sex'],
   ['wiek', 'age'],
-  ['strona internetowa', 'url'],
-  ['strona www', 'url'],
   ['zawód', 'job_title'],
   ['stanowisko', 'job_title'],
   ['firma', 'company'],
   ['dział', 'department'],
   ['wiadomość', 'description'],
   ['komentarz', 'description'],
+  ['opis', 'description'],
   ['szukaj', 'search'],
   ['cena', 'price'],
   ['ilość', 'number'],
   ['liczba', 'number'],
 
-  // Short terms
+  // Short terms (use word boundaries)
   ['ulica', 'address'],
   ['dom', 'building'],
   ['lokal', 'room_number'],
   ['fax', 'phone'],
-  ['nip', 'company'] // Tax ID often associated with company
+  ['nip', 'company']
 ];
+
+/**
+ * Escape special regex characters in a string
+ */
+const escapeRegex = (str: string): string => {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+};
 
 /**
  * Translate Polish keywords to English for better pattern matching
@@ -63,9 +73,9 @@ export const translatePolishKeywords = (text: string): string => {
   let translated = text;
   // Process in order (longest first) to avoid partial matches
   for (const [polish, english] of polishKeywordMap) {
-    // Use word boundaries for short words to avoid false positives (e.g. "dom" in "random")
-    const regex =
-      polish.length <= 3 ? new RegExp(`\\b${polish}\\b`, 'gi') : new RegExp(polish, 'gi');
+    // Use word boundaries for short words to avoid false positives
+    const pattern = polish.length <= 3 ? `\\b${escapeRegex(polish)}\\b` : escapeRegex(polish);
+    const regex = new RegExp(pattern, 'gi');
 
     if (regex.test(translated)) {
       translated = translated.replace(regex, english);

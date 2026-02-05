@@ -1,6 +1,6 @@
 {
   "name": "formfiller",
-  "version": "2.4.1",
+  "version": "2.4.2",
   "description": "Fills fake-data to HTML Form with AI-powered detection. Supports multiple languages.",
   "main": "background.js",
   "scripts": {

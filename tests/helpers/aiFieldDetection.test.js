@@ -189,7 +189,9 @@ describe('aiFieldDetection', () => {
       // Check that it's email type (most important)
       expect(prediction.type).toBe('email');
       // Enhancement feature should be present (but test is flexible on exact string)
-      expect(prediction.features.some(f => f.includes('placeholder') || f.includes('enhance'))).toBe(true);
+      expect(
+        prediction.features.some(f => f.includes('placeholder') || f.includes('enhance'))
+      ).toBe(true);
     });
 
     test('should boost confidence for native password type', () => {

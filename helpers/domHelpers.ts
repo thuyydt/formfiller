@@ -206,21 +206,19 @@ export const waitForElements = async (selector: string, timeout = 5000): Promise
   }
 
   return new Promise<boolean>(resolve => {
-    const startTime = Date.now();
+    let resolved = false;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     // Create MutationObserver to watch for DOM changes
     const observer = new MutationObserver(() => {
+      if (resolved) return;
+
       const elements = document.querySelectorAll(selector);
       if (elements.length > 0) {
+        resolved = true;
         observer.disconnect();
+        if (timeoutId) clearTimeout(timeoutId);
         resolve(true);
-        return;
-      }
-
-      // Check timeout
-      if (Date.now() - startTime >= timeout) {
-        observer.disconnect();
-        resolve(false);
       }
     });
 
@@ -231,8 +229,10 @@ export const waitForElements = async (selector: string, timeout = 5000): Promise
       attributes: false // Only care about DOM structure changes
     });
 
-    // Fallback timeout in case observer misses something
-    setTimeout(() => {
+    // Fallback timeout - ensures cleanup even if observer misses something
+    timeoutId = setTimeout(() => {
+      if (resolved) return;
+      resolved = true;
       observer.disconnect();
       const elements = document.querySelectorAll(selector);
       resolve(elements.length > 0);

@@ -199,7 +199,8 @@ describe('labelFinder', () => {
       expect(result).toBe('Test Label');
       // Check that style was cached
       expect(label._cachedStyle).toBeDefined();
-    });    test('should search up to maxDepth levels', () => {
+    });
+    test('should search up to maxDepth levels', () => {
       const level1 = document.createElement('div');
       const level2 = document.createElement('div');
       const level3 = document.createElement('div');

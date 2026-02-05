@@ -16,6 +16,8 @@ interface MemoryStats {
 class MemoryManager {
   private cleanupCallbacks: Array<() => void> = [];
   private cleanupTimer: number | null = null;
+  private autoCleanupIntervalId: number | null = null;
+  private isDestroyed = false;
   private readonly CLEANUP_DELAY = 500; // ms
   private readonly AUTO_CLEANUP_INTERVAL = 300000; // 5 minutes
 
@@ -26,6 +28,12 @@ class MemoryManager {
 
     // Start auto cleanup for long-running pages
     this.startAutoCleanup();
+
+    // Register cleanup on page unload
+    if (typeof window !== 'undefined') {
+      window.addEventListener('beforeunload', () => this.destroy());
+      window.addEventListener('pagehide', () => this.destroy());
+    }
   }
 
   /**
@@ -78,10 +86,56 @@ class MemoryManager {
    * Start automatic periodic cleanup
    */
   private startAutoCleanup(): void {
-    setInterval(() => {
+    // Clear any existing interval
+    if (this.autoCleanupIntervalId !== null) {
+      clearInterval(this.autoCleanupIntervalId);
+    }
+
+    this.autoCleanupIntervalId = window.setInterval(() => {
+      if (this.isDestroyed) return;
       logger.debug('Memory Manager: Running auto cleanup');
       this.clearAll();
     }, this.AUTO_CLEANUP_INTERVAL);
+  }
+
+  /**
+   * Stop automatic cleanup
+   */
+  stopAutoCleanup(): void {
+    if (this.autoCleanupIntervalId !== null) {
+      clearInterval(this.autoCleanupIntervalId);
+      this.autoCleanupIntervalId = null;
+      logger.debug('Memory Manager: Auto cleanup stopped');
+    }
+  }
+
+  /**
+   * Destroy the memory manager and cleanup all resources
+   */
+  destroy(): void {
+    if (this.isDestroyed) return;
+    this.isDestroyed = true;
+
+    logger.debug('Memory Manager: Destroying instance');
+
+    // Stop auto cleanup
+    this.stopAutoCleanup();
+
+    // Cancel any pending cleanup
+    this.cancelCleanup();
+
+    // Run final cleanup
+    this.clearAll();
+
+    // Clear callbacks
+    this.cleanupCallbacks = [];
+  }
+
+  /**
+   * Check if the manager has been destroyed
+   */
+  isActive(): boolean {
+    return !this.isDestroyed;
   }
 
   /**

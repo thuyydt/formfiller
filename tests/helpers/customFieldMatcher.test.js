@@ -15,9 +15,7 @@ describe('customFieldMatcher', () => {
 
   describe('Wildcard Pattern Matching', () => {
     test('should match *suffix pattern', () => {
-      const customFields = [
-        { field: '*email', type: 'faker', value: 'internet.email' }
-      ];
+      const customFields = [{ field: '*email', type: 'faker', value: 'internet.email' }];
 
       const result = matchCustomField(mockElement, customFields, false);
       expect(result).not.toBeNull();
@@ -26,9 +24,7 @@ describe('customFieldMatcher', () => {
 
     test('should match prefix* pattern', () => {
       mockElement.name = 'email_address';
-      const customFields = [
-        { field: 'email*', type: 'faker', value: 'internet.email' }
-      ];
+      const customFields = [{ field: 'email*', type: 'faker', value: 'internet.email' }];
 
       const result = matchCustomField(mockElement, customFields, false);
       expect(result).not.toBeNull();
@@ -36,9 +32,7 @@ describe('customFieldMatcher', () => {
     });
 
     test('should match *infix* pattern', () => {
-      const customFields = [
-        { field: '*mail*', type: 'faker', value: 'internet.email' }
-      ];
+      const customFields = [{ field: '*mail*', type: 'faker', value: 'internet.email' }];
 
       const result = matchCustomField(mockElement, customFields, false);
       expect(result).not.toBeNull();
@@ -47,18 +41,14 @@ describe('customFieldMatcher', () => {
 
     test('should match exact pattern (case-insensitive)', () => {
       mockElement.name = 'EMAIL';
-      const customFields = [
-        { field: 'email', type: 'faker', value: 'internet.email' }
-      ];
+      const customFields = [{ field: 'email', type: 'faker', value: 'internet.email' }];
 
       const result = matchCustomField(mockElement, customFields, false);
       expect(result).not.toBeNull();
     });
 
     test('should not match when pattern does not match', () => {
-      const customFields = [
-        { field: '*phone*', type: 'faker', value: 'phone.number' }
-      ];
+      const customFields = [{ field: '*phone*', type: 'faker', value: 'phone.number' }];
 
       const result = matchCustomField(mockElement, customFields, false);
       expect(result).toBeNull();
@@ -67,9 +57,7 @@ describe('customFieldMatcher', () => {
 
   describe('Class Selector Matching', () => {
     test('should match class selector without wildcard', () => {
-      const customFields = [
-        { field: '.email-field', type: 'faker', value: 'internet.email' }
-      ];
+      const customFields = [{ field: '.email-field', type: 'faker', value: 'internet.email' }];
 
       const result = matchCustomField(mockElement, customFields, false);
       expect(result).not.toBeNull();
@@ -77,9 +65,7 @@ describe('customFieldMatcher', () => {
     });
 
     test('should match class selector with wildcard', () => {
-      const customFields = [
-        { field: '.*-field', type: 'faker', value: 'internet.email' }
-      ];
+      const customFields = [{ field: '.*-field', type: 'faker', value: 'internet.email' }];
 
       const result = matchCustomField(mockElement, customFields, false);
       expect(result).not.toBeNull();
@@ -133,9 +119,7 @@ describe('customFieldMatcher', () => {
     });
 
     test('should skip fields without field property', () => {
-      const customFields = [
-        { type: 'faker', value: 'internet.email' }
-      ];
+      const customFields = [{ type: 'faker', value: 'internet.email' }];
 
       const result = matchCustomField(mockElement, customFields, false);
       expect(result).toBeNull();
@@ -143,9 +127,7 @@ describe('customFieldMatcher', () => {
 
     test('should handle elements without attributes', () => {
       const minimalElement = document.createElement('input');
-      const customFields = [
-        { field: '*test*', type: 'list', value: 'test' }
-      ];
+      const customFields = [{ field: '*test*', type: 'list', value: 'test' }];
 
       const result = matchCustomField(minimalElement, customFields, false);
       expect(result).toBeNull();
@@ -163,9 +145,7 @@ describe('customFieldMatcher', () => {
 
       mockElement.name = 'field123'; // Non-descriptive name
 
-      const customFields = [
-        { field: '*email*', type: 'faker', value: 'internet.email' }
-      ];
+      const customFields = [{ field: '*email*', type: 'faker', value: 'internet.email' }];
 
       const result = matchCustomField(mockElement, customFields, true);
 

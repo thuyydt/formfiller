@@ -1,6 +1,8 @@
 // helpers/clearUndo.ts
 // Provides functionality to clear filled data or undo the last fill operation
 
+import { logger } from './logger.js';
+
 interface FieldState {
   element: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
   value: string;
@@ -25,6 +27,9 @@ let formStateHistory: FormState[] = [];
 // Time-to-live for saved states (5 minutes)
 const STATE_TTL = 5 * 60 * 1000;
 
+// Periodic cleanup interval ID
+let cleanupIntervalId: ReturnType<typeof setInterval> | null = null;
+
 // Cleanup old states to prevent memory leaks
 const cleanupOldStates = (): void => {
   const now = Date.now();
@@ -41,6 +46,50 @@ const cleanupOldStates = (): void => {
   });
 };
 
+/**
+ * Start periodic cleanup of form state history
+ * This ensures DOM references are released even if undo is never called
+ */
+const startPeriodicCleanup = (): void => {
+  if (cleanupIntervalId !== null) return;
+
+  // Run cleanup every 2 minutes
+  cleanupIntervalId = setInterval(
+    () => {
+      cleanupOldStates();
+    },
+    2 * 60 * 1000
+  );
+};
+
+/**
+ * Stop periodic cleanup
+ */
+const stopPeriodicCleanup = (): void => {
+  if (cleanupIntervalId !== null) {
+    clearInterval(cleanupIntervalId);
+    cleanupIntervalId = null;
+  }
+};
+
+// Start periodic cleanup when module loads
+if (typeof window !== 'undefined') {
+  startPeriodicCleanup();
+
+  // Cleanup on page visibility change (user switches tabs)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      cleanupOldStates();
+    }
+  });
+
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', () => {
+    stopPeriodicCleanup();
+    clearUndoMemory();
+  });
+}
+
 // Save current form state before filling
 export const saveFormState = (): FormState => {
   // Clean up old states first
@@ -51,22 +100,25 @@ export const saveFormState = (): FormState => {
   };
 
   // Collect all fillable fields and their current values
-  const fields = document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(
-    'input:not([type="hidden"]):not([type="submit"]):not([type="button"]), textarea, select'
-  );
+  const fields = document.querySelectorAll<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  >('input:not([type="hidden"]):not([type="submit"]):not([type="button"]), textarea, select');
 
   fields.forEach(field => {
-    const isReadOnly = field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement
-      ? field.readOnly
-      : false;
+    const isReadOnly =
+      field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement
+        ? field.readOnly
+        : false;
     if (!field.disabled && !isReadOnly) {
       const fieldState: FieldState = {
         element: field,
         value: field.value,
         type: (field as HTMLInputElement).type || field.tagName.toLowerCase(),
-        checked: (field as HTMLInputElement).type === 'checkbox' || (field as HTMLInputElement).type === 'radio'
-          ? (field as HTMLInputElement).checked
-          : null
+        checked:
+          (field as HTMLInputElement).type === 'checkbox' ||
+          (field as HTMLInputElement).type === 'radio'
+            ? (field as HTMLInputElement).checked
+            : null
       };
       state.fields.push(fieldState);
     }
@@ -106,8 +158,9 @@ export const undoFill = (): UndoResult => {
         triggerFieldEvents(element);
         restoredCount++;
       }
-    } catch {
-      // Silently ignore errors for individual fields
+    } catch (error) {
+      // Log errors for individual fields but continue processing others
+      logger.debug('Error restoring field during undo:', error);
     }
   });
 
@@ -123,20 +176,26 @@ export const undoFill = (): UndoResult => {
 
 // Clear all filled fields (reset to empty)
 export const clearAllFields = (): UndoResult => {
-  const fields = document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(
+  const fields = document.querySelectorAll<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  >(
     'input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="image"]), textarea, select'
   );
 
   let clearedCount = 0;
 
   fields.forEach(field => {
-    const isReadOnly = field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement
-      ? field.readOnly
-      : false;
+    const isReadOnly =
+      field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement
+        ? field.readOnly
+        : false;
     if (!field.disabled && !isReadOnly && field.value && field.value.trim() !== '') {
       try {
         // Clear the value
-        if (field instanceof HTMLInputElement && (field.type === 'checkbox' || field.type === 'radio')) {
+        if (
+          field instanceof HTMLInputElement &&
+          (field.type === 'checkbox' || field.type === 'radio')
+        ) {
           field.checked = false;
         } else if (field instanceof HTMLSelectElement) {
           // Reset select to first option or empty
@@ -148,8 +207,9 @@ export const clearAllFields = (): UndoResult => {
         // Trigger events for JS frameworks
         triggerFieldEvents(field);
         clearedCount++;
-      } catch {
-        // Silently ignore errors
+      } catch (error) {
+        // Log errors for individual fields but continue processing others
+        logger.debug('Error clearing field:', error);
       }
     }
   });
@@ -162,13 +222,16 @@ export const clearAllFields = (): UndoResult => {
 };
 
 // Trigger events for JavaScript frameworks
-const triggerFieldEvents = (element: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement): void => {
+const triggerFieldEvents = (
+  element: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+): void => {
   // For React and other frameworks
-  const proto = element instanceof HTMLTextAreaElement
-    ? window.HTMLTextAreaElement.prototype
-    : element instanceof HTMLSelectElement
-      ? window.HTMLSelectElement.prototype
-      : window.HTMLInputElement.prototype;
+  const proto =
+    element instanceof HTMLTextAreaElement
+      ? window.HTMLTextAreaElement.prototype
+      : element instanceof HTMLSelectElement
+        ? window.HTMLSelectElement.prototype
+        : window.HTMLInputElement.prototype;
 
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const descriptor = Object.getOwnPropertyDescriptor(proto, 'value');
@@ -192,15 +255,18 @@ export const canUndo = (): boolean => {
 
 // Get the number of fields that can be cleared
 export const getClearableFieldsCount = (): number => {
-  const fields = document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(
+  const fields = document.querySelectorAll<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  >(
     'input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="image"]), textarea, select'
   );
 
   let count = 0;
   fields.forEach(field => {
-    const isReadOnly = field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement
-      ? field.readOnly
-      : false;
+    const isReadOnly =
+      field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement
+        ? field.readOnly
+        : false;
     if (!field.disabled && !isReadOnly && field.value && field.value.trim() !== '') {
       count++;
     }

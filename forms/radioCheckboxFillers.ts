@@ -3,16 +3,8 @@ import type { FormFillerSettings } from '../types';
 import { groupInputsByName, randomlyCheckOneInEachGroup } from '../helpers/groupUtils.js';
 import { matchCustomField } from '../helpers/customFieldMatcher.js';
 import { getAllRadios, getAllCheckboxes } from '../helpers/domHelpers.js';
-
-// Helper to check if current domain should be ignored
-const shouldIgnoreDomain = (ignoreDomains = ''): boolean => {
-  const domains = (ignoreDomains || '')
-    .split(/\n|,/)
-    .map(s => s.trim())
-    .filter(Boolean);
-  const currentDomain = window.location.hostname;
-  return domains.some(domain => currentDomain.endsWith(domain));
-};
+import { shouldIgnoreDomain } from '../helpers/domainUtils.js';
+import { cachedParseIgnoreKeywords } from '../helpers/computedCache.js';
 
 export const fillRadios = (settings: FormFillerSettings = {}): void => {
   if (shouldIgnoreDomain(settings.ignoreDomains)) {
@@ -23,10 +15,7 @@ export const fillRadios = (settings: FormFillerSettings = {}): void => {
   const radios = getAllRadios();
   if (!radios.length) return;
 
-  const ignoreKeywords = (settings.ignoreFields || '')
-    .split(',')
-    .map(s => s.trim().toLowerCase())
-    .filter(Boolean);
+  const ignoreKeywords = cachedParseIgnoreKeywords(settings.ignoreFields || '');
 
   // Identify groups that are already filled
   const filledGroups = new Set<string>();

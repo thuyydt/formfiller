@@ -7,7 +7,7 @@ const mockPerson = {
 };
 
 const mockInternet = {
-  email: (options) => options?.provider ? `test@${options.provider}` : 'test@example.com',
+  email: options => (options?.provider ? `test@${options.provider}` : 'test@example.com'),
   username: () => 'testuser',
   url: () => 'https://example.com',
   userName: () => 'testuser',
@@ -27,12 +27,12 @@ const mockLocation = {
   state: () => 'NY',
   buildingNumber: () => '456',
   secondaryAddress: () => 'Apt 789',
-  latitude: (options) => {
+  latitude: options => {
     const min = options?.min || -90;
     const max = options?.max || 90;
     return Math.random() * (max - min) + min;
   },
-  longitude: (options) => {
+  longitude: options => {
     const min = options?.min || -180;
     const max = options?.max || 180;
     return Math.random() * (max - min) + min;
@@ -40,7 +40,7 @@ const mockLocation = {
 };
 
 const mockPhone = {
-  number: (options) => {
+  number: options => {
     if (options?.style === 'international') {
       return '+1-555-0123';
     }
@@ -54,7 +54,7 @@ const mockCompany = {
 };
 
 const mockFinance = {
-  amount: (options) => {
+  amount: options => {
     const min = options?.min || 0;
     const max = options?.max || 1000;
     const dec = options?.dec || 2;
@@ -71,7 +71,7 @@ const mockFinance = {
 };
 
 const mockDate = {
-  past: (options) => {
+  past: options => {
     const years = options?.years || 1;
     const date = new Date();
     date.setFullYear(date.getFullYear() - years);
@@ -79,7 +79,7 @@ const mockDate = {
   },
   future: () => new Date('2025-12-31'),
   birthdate: () => new Date('1990-01-01'),
-  recent: (options) => {
+  recent: options => {
     const days = options?.days || 1;
     const date = new Date();
     date.setDate(date.getDate() - days);
@@ -90,8 +90,8 @@ const mockDate = {
 
 const mockLorem = {
   word: () => 'lorem',
-  words: (options) => {
-    const count = typeof options === 'number' ? options : (options?.min || 3);
+  words: options => {
+    const count = typeof options === 'number' ? options : options?.min || 3;
     return Array(count).fill('word').join(' ');
   },
   sentence: () => 'Lorem ipsum dolor sit amet.',
@@ -100,7 +100,7 @@ const mockLorem = {
 
 const mockColor = {
   human: () => 'blue',
-  rgb: (options) => {
+  rgb: options => {
     if (options?.format === 'hex') {
       return '#0000ff';
     }
@@ -110,12 +110,12 @@ const mockColor = {
 };
 
 const mockNumber = {
-  int: (options) => {
+  int: options => {
     const min = options?.min || 0;
     const max = options?.max || 100;
     return Math.floor(Math.random() * (max - min + 1)) + min;
   },
-  float: (options) => {
+  float: options => {
     const min = options?.min || 0;
     const max = options?.max || 100;
     return Math.random() * (max - min) + min;
@@ -129,8 +129,8 @@ const mockString = {
 };
 
 const mockHelpers = {
-  arrayElement: (array) => array[Math.floor(Math.random() * array.length)],
-  shuffle: (array) => [...array].sort(() => Math.random() - 0.5)
+  arrayElement: array => array[Math.floor(Math.random() * array.length)],
+  shuffle: array => [...array].sort(() => Math.random() - 0.5)
 };
 
 const mockSystem = {

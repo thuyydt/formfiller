@@ -16,11 +16,19 @@ export const vietnameseKeywordMap: [string, string][] = [
   ['ngày sinh', 'birthday'],
   ['thành phố', 'city'],
   ['mật khẩu', 'password'],
-  ['địa chỉ', 'address'],
+  ['địa chỉ email', 'email'],
   ['ghi chú', 'text'],
   ['tiêu đề', 'text'],
   ['nội dung', 'text'],
   ['tìm kiếm', 'search'],
+  ['số thẻ', 'credit_card'],
+  ['mã bảo mật', 'credit_card_cvv'],
+  ['ngày hết hạn', 'credit_card_expiry'],
+  ['số tài khoản', 'account_number'],
+  ['chủ tài khoản', 'account_name'],
+  ['trang web', 'url'],
+  ['mã bưu điện', 'zipcode'],
+  ['mã bưu chính', 'zipcode'],
 
   // Medium length
   ['họ và tên', 'name'],
@@ -35,10 +43,13 @@ export const vietnameseKeywordMap: [string, string][] = [
   ['di động', 'phone'],
   ['cố định', 'phone'],
   ['liên hệ', 'phone'],
+  ['địa chỉ', 'address'],
+  ['mô tả', 'description'],
+  ['giá', 'price'],
+  ['số lượng', 'number'],
 
   // Short terms
   ['họ tên', 'name'],
-  ['địa chỉ', 'address'],
   ['email', 'email'],
   ['thư', 'email'],
   ['tên', 'firstname'],
@@ -48,17 +59,35 @@ export const vietnameseKeywordMap: [string, string][] = [
 ];
 
 /**
+ * Check if text contains Vietnamese-specific diacritics
+ */
+export const containsVietnamese = (text: string): boolean => {
+  // Vietnamese uses Latin script with specific diacritics
+  // Check for unique Vietnamese characters
+  return /[àảãáạăằẳẵắặâầẩẫấậđèẻẽéẹêềểễếệìỉĩíịòỏõóọôồổỗốộơờởỡớợùủũúụưừửữứựỳỷỹýỵ]/i.test(text);
+};
+
+/**
+ * Escape special regex characters in a string
+ */
+const escapeRegex = (str: string): string => {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+};
+
+/**
  * Translate Vietnamese keywords to English for better pattern matching
  * Uses ordered array to ensure longer keywords are matched first
  */
 export const translateVietnameseKeywords = (text: string): string => {
-  if (!text) return text;
+  if (!text || !containsVietnamese(text)) return text;
 
   let translated = text;
   // Process in order (longest first) to avoid partial matches
   for (const [vietnamese, english] of vietnameseKeywordMap) {
-    if (translated.includes(vietnamese)) {
-      translated = translated.replace(new RegExp(vietnamese, 'g'), english);
+    if (translated.toLowerCase().includes(vietnamese)) {
+      // Use case-insensitive replacement for Vietnamese
+      const regex = new RegExp(escapeRegex(vietnamese), 'gi');
+      translated = translated.replace(regex, english);
     }
   }
   return translated;

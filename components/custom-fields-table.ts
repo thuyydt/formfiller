@@ -67,7 +67,7 @@ export class CustomFieldsTable extends LitElement {
     }
 
     .custom-fields-table select,
-    .custom-fields-table input[type="text"] {
+    .custom-fields-table input[type='text'] {
       width: 100%;
       padding: 6px 8px;
       border-radius: 4px;
@@ -79,7 +79,7 @@ export class CustomFieldsTable extends LitElement {
     }
 
     .custom-fields-table select:focus,
-    .custom-fields-table input[type="text"]:focus {
+    .custom-fields-table input[type='text']:focus {
       border: 1.5px solid #2d7ff9;
       outline: none;
     }
@@ -210,7 +210,9 @@ export class CustomFieldsTable extends LitElement {
                   <select
                     .value=${field.type}
                     @change=${(e: Event) =>
-                      this.updateField(index, { type: (e.target as HTMLSelectElement).value as 'list' | 'regex' | 'faker' })}
+                      this.updateField(index, {
+                        type: (e.target as HTMLSelectElement).value as 'list' | 'regex' | 'faker'
+                      })}
                   >
                     <option value="list" ?selected=${field.type === 'list'}>List</option>
                     <option value="regex" ?selected=${field.type === 'regex'}>Regex</option>
@@ -224,7 +226,9 @@ export class CustomFieldsTable extends LitElement {
                           class="field-faker"
                           .value=${field.faker || 'internet.email'}
                           @change=${(e: Event) =>
-                            this.updateField(index, { faker: (e.target as HTMLSelectElement).value })}
+                            this.updateField(index, {
+                              faker: (e.target as HTMLSelectElement).value
+                            })}
                         >
                           ${FAKER_DATA_TYPES.map(
                             dataType => html`
@@ -241,7 +245,9 @@ export class CustomFieldsTable extends LitElement {
                           class="field-value"
                           .value=${field.value || ''}
                           @input=${(e: Event) =>
-                            this.updateField(index, { value: (e.target as HTMLInputElement).value })}
+                            this.updateField(index, {
+                              value: (e.target as HTMLInputElement).value
+                            })}
                           placeholder="Value or Pattern"
                         />
                       `}

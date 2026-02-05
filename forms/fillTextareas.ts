@@ -5,16 +5,9 @@ import { getElmType, isFieldType } from '../helpers/typeDetection.js';
 import { matchCustomField } from '../helpers/customFieldMatcher.js';
 // import { findClosestLabel } from '../helpers/labelFinder.js';
 import { getAllTextareas } from '../helpers/domHelpers.js';
-
-// Helper to check if current domain should be ignored
-const shouldIgnoreDomain = (ignoreDomains = ''): boolean => {
-  const domains = (ignoreDomains || '')
-    .split(/\n|,/)
-    .map(s => s.trim())
-    .filter(Boolean);
-  const currentDomain = window.location.hostname;
-  return domains.some(domain => currentDomain.endsWith(domain));
-};
+import { logger } from '../helpers/logger.js';
+import { shouldIgnoreDomain } from '../helpers/domainUtils.js';
+import { cachedParseIgnoreKeywords } from '../helpers/computedCache.js';
 
 export const fillTextareas = (settings: FormFillerSettings = {}): void => {
   if (shouldIgnoreDomain(settings.ignoreDomains)) {
@@ -27,10 +20,7 @@ export const fillTextareas = (settings: FormFillerSettings = {}): void => {
     return;
   }
 
-  const ignoreKeywords = (settings.ignoreFields || '')
-    .split(',')
-    .map(s => s.trim().toLowerCase())
-    .filter(Boolean);
+  const ignoreKeywords = cachedParseIgnoreKeywords(settings.ignoreFields || '');
 
   textareas.forEach(textarea => {
     // const labelText = settings.enableLabelMatching ? findClosestLabel(textarea) : '';
@@ -127,7 +117,8 @@ const triggerTextareaEvents = (element: HTMLTextAreaElement): void => {
     element.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true }));
     element.dispatchEvent(new KeyboardEvent('keypress', { bubbles: true }));
     element.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true }));
-  } catch {
-    // Silently ignore keyboard event errors
+  } catch (error) {
+    // Log keyboard event errors for debugging but don't break the flow
+    logger.debug('Keyboard event dispatch failed in textarea:', error);
   }
 };

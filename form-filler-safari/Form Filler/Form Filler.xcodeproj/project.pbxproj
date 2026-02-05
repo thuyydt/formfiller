@@ -454,7 +454,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 2.4.1;
+				MARKETING_VERSION = 2.4.2;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
@@ -489,7 +489,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 2.4.1;
+				MARKETING_VERSION = 2.4.2;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
@@ -521,6 +521,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Form Filler/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Form Filler";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -528,7 +529,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.4.1;
+				MARKETING_VERSION = 2.4.2;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
@@ -563,6 +564,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Form Filler/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Form Filler";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -570,7 +572,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.4.1;
+				MARKETING_VERSION = 2.4.2;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,

@@ -1,5 +1,18 @@
 # Changelog
 
+## Version 2.4.2 (February 5, 2026)
+- **NEW:** 🎨 New Extension Icon
+  - Updated extension icon with fresh new design
+  - Improved stability
+  - Fixed memory leak issues
+- **IMPROVED:** 📚 Documentation Updates
+  - Improved homepage design and content
+  - Added CONTRIBUTING guide for contributors
+  - Updated README documentation
+  - Added release links to homepage
+- **FIX:** 🦊 Firefox Extension Store
+  - Fixed warning issues when releasing to Firefox extension store
+
 ## Version 2.4.1 (December 16, 2025)
 - **NEW:** 📅 Date Range Support
   - Added support for birthdate fields with configurable min/max age

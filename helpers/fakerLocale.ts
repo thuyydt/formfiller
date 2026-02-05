@@ -1,5 +1,17 @@
 // helpers/fakerLocale.ts
-import { fakerJA, fakerEN, fakerVI, fakerZH_CN, fakerAR, fakerDE, fakerES, fakerFR, fakerKO, fakerPL, fakerRU } from '../lib';
+import {
+  fakerJA,
+  fakerEN,
+  fakerVI,
+  fakerZH_CN,
+  fakerAR,
+  fakerDE,
+  fakerES,
+  fakerFR,
+  fakerKO,
+  fakerPL,
+  fakerRU
+} from '../lib';
 import type { Faker } from '../lib';
 
 /**

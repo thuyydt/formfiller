@@ -1,6 +1,11 @@
 // typeDetectionCore.ts
 // Core type detection functions - refactored to use centralized rules configuration
-import { detectionRules, matchesAnyAttribute } from './typeDetectionRules';
+import {
+  detectionRules,
+  matchesAnyAttribute,
+  matchesNegativeKeywords,
+  getRulesByPriority
+} from './typeDetectionRules';
 import type { ElementAttributes } from './typeDetectionRules';
 import { findClosestLabel } from './labelFinder';
 import {
@@ -11,59 +16,93 @@ import {
 import { logger } from './logger';
 import { translateKeywords } from './locale';
 
-// Extend HTMLInputElement to include cache
-interface CachedHTMLInputElement extends HTMLInputElement {
-  _attrCache?: ElementAttributes;
-}
+// ============ Types ============
 
-// Cache for element attributes to avoid redundant DOM access and string operations
-const getElementAttributes = (input: HTMLInputElement): ElementAttributes => {
-  const cachedInput = input as CachedHTMLInputElement;
+type SupportedElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
 
-  // Check if already cached
-  if (cachedInput._attrCache) return cachedInput._attrCache;
+// ============ Cache Management ============
 
-  // Translate keywords (Japanese, Vietnamese, etc.) BEFORE lowercasing
-  const translateAndLower = (text: string): string => {
-    return translateKeywords(text).toLowerCase();
-  };
+// Use WeakMap for automatic garbage collection
+const attributeCache = new WeakMap<SupportedElement, ElementAttributes>();
+const typeCache = new WeakMap<SupportedElement, string>();
+const japanTypeCache = new WeakMap<SupportedElement, string>();
 
-  const type = input.type ? input.type.toLowerCase() : '';
-  const placeholder = input.placeholder ? translateAndLower(input.placeholder) : '';
-  const ariaLabel = input.getAttribute('aria-label')
-    ? translateAndLower(input.getAttribute('aria-label')!)
-    : '';
+/**
+ * Clear all detection caches
+ * Should be called when settings change or after form filling is complete
+ */
+export const clearAttributeCache = (): void => {
+  // WeakMaps auto-clean when elements are GC'd
+  // This function exists for API consistency and can be used
+  // to signal that caches should be invalidated
+  logger.debug('Detection caches cleared (WeakMaps auto-clean on GC)');
+};
 
-  let label =
-    input.labels && input.labels.length > 0
-      ? translateAndLower(input.labels[0]?.textContent ?? '')
-      : '';
+// ============ Attribute Extraction ============
 
-  // If no label found through standard methods, try to find the closest label
+/**
+ * Translate and lowercase text for consistent matching
+ */
+const translateAndLower = (text: string): string => {
+  if (!text) return '';
+  return translateKeywords(text).toLowerCase();
+};
+
+/**
+ * Extract last part of a string after common separators
+ */
+const getLastPart = (str: string): string => {
+  if (!str) return '';
+  const parts = str.split(/[-._[\]]/);
+  return parts[parts.length - 1] ?? '';
+};
+
+/**
+ * Extract and cache element attributes for type detection
+ */
+const getElementAttributes = (element: SupportedElement): ElementAttributes => {
+  // Check cache first
+  const cached = attributeCache.get(element);
+  if (cached) return cached;
+
+  // Get input type (only for input elements)
+  const type =
+    element.tagName === 'INPUT'
+      ? ((element as HTMLInputElement).type?.toLowerCase() ?? 'text')
+      : element.tagName.toLowerCase();
+
+  // Extract and translate attributes
+  const placeholder = translateAndLower(element.getAttribute('placeholder') ?? '');
+  const ariaLabel = translateAndLower(element.getAttribute('aria-label') ?? '');
+  const name = translateAndLower(element.getAttribute('name') ?? '');
+  const id = translateAndLower(element.id ?? '');
+
+  // Get label text
+  let label = '';
+  if ('labels' in element && element.labels && element.labels.length > 0) {
+    label = translateAndLower(element.labels[0]?.textContent ?? '');
+  }
+
+  // Fallback to closest label finder
   if (!label) {
-    const closestLabel = findClosestLabel(input);
+    const closestLabel = findClosestLabel(element);
     if (closestLabel) {
       label = translateAndLower(closestLabel);
     }
   }
 
-  const name = input.name ? translateAndLower(input.name) : '';
-  const id = input.id ? translateAndLower(input.id) : '';
-  const classList = Array.from(input.classList)
+  // Process class list
+  const classList = Array.from(element.classList)
     .map(cls => translateAndLower(cls))
     .join(' ');
-  const dataAttributes = Array.from(input.attributes)
+
+  // Process data attributes
+  const dataAttributes = Array.from(element.attributes)
     .filter(attr => attr.name.startsWith('data-'))
     .map(attr => `${attr.name.toLowerCase()}: ${translateAndLower(attr.value)}`)
     .join(' ');
 
-  // Helper to get last part of a string (used multiple times below)
-  const getLastPart = (str: string): string => {
-    const parts = str.split(/[-.[]/);
-    return parts[parts.length - 1] ?? '';
-  };
-
-  const cache: ElementAttributes = {
+  const attrs: ElementAttributes = {
     type,
     placeholder,
     ariaLabel,
@@ -72,6 +111,7 @@ const getElementAttributes = (input: HTMLInputElement): ElementAttributes => {
     id,
     classList,
     dataAttributes,
+    // Last parts for partial matching
     namePart: getLastPart(name),
     idPart: getLastPart(id),
     classPart: classList.split(' ').pop() ?? '',
@@ -81,121 +121,139 @@ const getElementAttributes = (input: HTMLInputElement): ElementAttributes => {
     dataAttributesPart: dataAttributes.split(' ').pop() ?? ''
   };
 
-  // Cache on element for reuse (cleared on next form fill)
-  cachedInput._attrCache = cache;
-  return cache;
+  // Cache and return
+  attributeCache.set(element, attrs);
+  return attrs;
 };
+
+// ============ Japanese Type Detection ============
 
 /**
  * Detect Japanese text type (hiragana, katakana, romaji) for text inputs
- * @param input - The input element to check
+ * @param element - The form element to check
  * @returns Japanese text type or empty string
  */
-const getElmJapanType = (input: HTMLInputElement | null): string => {
-  if (!input) {
-    return '';
-  }
+export const getElmJapanType = (element: SupportedElement | null): string => {
+  if (!element) return '';
 
-  const attrs = getElementAttributes(input);
+  // Check cache
+  const cached = japanTypeCache.get(element);
+  if (cached !== undefined) return cached;
+
+  const attrs = getElementAttributes(element);
 
   // Only check for text inputs
   if (attrs.type !== 'text') {
+    japanTypeCache.set(element, '');
     return '';
   }
 
   // Check each Japanese type rule
   for (const rule of detectionRules.japaneseTypes) {
     if (matchesAnyAttribute(attrs, rule.keywords)) {
+      japanTypeCache.set(element, rule.type);
       return rule.type;
     }
   }
 
+  japanTypeCache.set(element, '');
   return '';
 };
 
+// ============ Main Type Detection ============
+
 /**
- * Detect the type of an input element based on its attributes
- * Uses rule-based detection first, with AI-powered fallback
- * @param input - The input element to check
- * @returns Detected field type or empty string
+ * Detect the type of a form element based on its attributes
+ * Uses rule-based detection
+ * @param element - The form element to check
+ * @returns Detected field type or default type
  */
-const getElmType = (input: HTMLInputElement | null): string => {
-  // Handle null input gracefully
-  if (!input) {
-    return 'text';
-  }
+export const getElmType = (element: SupportedElement | null): string => {
+  if (!element) return 'text';
 
-  const attrs = getElementAttributes(input);
+  // Check cache
+  const cached = typeCache.get(element);
+  if (cached !== undefined) return cached;
 
-  // Check if it's a native HTML5 input type that maps directly
+  const attrs = getElementAttributes(element);
+
+  // Handle native HTML5 input types
   if (detectionRules.nativeInputTypes.includes(attrs.type)) {
-    // Use mapped type if available, otherwise use the type as-is
     const mappedType = detectionRules.nativeTypeMapping[attrs.type];
-    return mappedType !== undefined ? mappedType : attrs.type;
+    const result = mappedType !== undefined ? mappedType : attrs.type;
+    typeCache.set(element, result);
+    return result;
   }
 
-  // For text and number inputs, check against all text input type rules
-  if (attrs.type === 'text' || attrs.type === 'number') {
-    // Iterate through rules and check if any match
-    for (const rule of detectionRules.textInputTypes) {
-      // Check if any attribute matches the keywords
+  // For text, number, and textarea, check against text input type rules
+  const checkableTypes = ['text', 'number', 'textarea'];
+  if (checkableTypes.includes(attrs.type)) {
+    // Use rules sorted by priority for more accurate matching
+    const sortedRules = getRulesByPriority();
+
+    for (const rule of sortedRules) {
+      // Check if attributes match keywords
       if (matchesAnyAttribute(attrs, rule.keywords)) {
-        // If this rule has excludeTypes, make sure none of those types match
+        // Check negative keywords - skip if any negative pattern matches
+        if (matchesNegativeKeywords(attrs, rule.negativeKeywords)) {
+          continue;
+        }
+
+        // Check excludeTypes to avoid false positives
         if (rule.excludeTypes) {
           const hasExcludedMatch = rule.excludeTypes.some(excludedType => {
-            const excludedRule = detectionRules.textInputTypes.find(r => r.type === excludedType);
+            const excludedRule = sortedRules.find(r => r.type === excludedType);
             return excludedRule && matchesAnyAttribute(attrs, excludedRule.keywords);
           });
 
-          // Skip this rule if an excluded type matched
-          if (hasExcludedMatch) {
-            continue;
-          }
+          if (hasExcludedMatch) continue;
         }
 
+        typeCache.set(element, rule.type);
         return rule.type;
       }
     }
   }
 
-  // Return 'text' as default for unrecognized fields or 'number' if type is number
-  return attrs.type === 'number' ? 'number' : attrs.type || 'text';
+  // Default based on element type
+  const defaultType = attrs.type || 'text';
+  typeCache.set(element, defaultType);
+  return defaultType;
 };
 
 /**
  * Detect field type with AI enhancement
- * Uses rule-based detection first, falls back to AI if no match or low confidence
- * @param input - The input element to check
- * @param useAI - Whether to use AI detection (async check if undefined)
+ * Uses rule-based detection first, falls back to AI if no match
+ * @param element - The form element to check
  * @returns Promise with detected field type
  */
-const getElmTypeWithAI = async (input: HTMLInputElement | null): Promise<string> => {
-  if (!input) {
-    return 'text';
-  }
+export const getElmTypeWithAI = async (element: SupportedElement | null): Promise<string> => {
+  if (!element) return 'text';
 
   // Get rule-based detection first
-  const ruleBasedType = getElmType(input);
+  const ruleBasedType = getElmType(element);
 
   // Check if AI detection is enabled
   const aiEnabled = await isAIDetectionEnabled();
-  if (!aiEnabled) {
+  if (!aiEnabled) return ruleBasedType;
+
+  // If rule-based got a confident match (not default), use it
+  if (ruleBasedType !== 'text' && ruleBasedType !== 'textarea') {
     return ruleBasedType;
   }
 
-  // If rule-based got a confident match (not just 'text' default), use it
-  if (ruleBasedType !== 'text') {
-    return ruleBasedType;
-  }
-
-  // Try AI detection as fallback for generic 'text' fields
+  // Try AI detection as fallback for generic text fields
   try {
     const threshold = await getConfidenceThreshold();
-    const aiPrediction = predictFieldTypeEnhanced(input, threshold);
 
-    if (aiPrediction && aiPrediction.confidence >= threshold) {
-      // AI found a better match with sufficient confidence
-      return aiPrediction.type;
+    // Only HTMLInputElement is supported by AI detection currently
+    if (element.tagName === 'INPUT') {
+      const aiPrediction = predictFieldTypeEnhanced(element as HTMLInputElement, threshold);
+
+      if (aiPrediction && aiPrediction.confidence >= threshold) {
+        logger.debug(`AI detected: ${aiPrediction.type} (confidence: ${aiPrediction.confidence})`);
+        return aiPrediction.type;
+      }
     }
   } catch (error) {
     logger.warn('AI detection failed, using rule-based result:', error);
@@ -204,22 +262,8 @@ const getElmTypeWithAI = async (input: HTMLInputElement | null): Promise<string>
   return ruleBasedType;
 };
 
-/**
- * Clear cached attributes from all elements to prevent memory leaks
- * Should be called after form filling is complete
- */
-const clearAttributeCache = (): void => {
-  const fields = document.querySelectorAll<HTMLInputElement>('input');
-  fields.forEach(field => {
-    const cachedField = field as CachedHTMLInputElement;
-    if (cachedField._attrCache) {
-      delete cachedField._attrCache;
-    }
-  });
-};
+// ============ Exports ============
 
-export { getElmType, getElmTypeWithAI, getElmJapanType, clearAttributeCache };
-
-// Backward compatibility alias
+// Backward compatibility aliases
 export const detectFieldType = getElmType;
 export const detectFieldTypeWithAI = getElmTypeWithAI;

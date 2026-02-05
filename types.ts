@@ -122,16 +122,9 @@ export interface DetectionReport {
 
 /**
  * Storage keys used by the extension
+ * Derived from FormFillerSettings to ensure sync
  */
-export type StorageKey =
-  | 'locale'
-  | 'ignoreFields'
-  | 'ignoreHidden'
-  | 'ignoreFilled'
-  | 'ignoreDomains'
-  | 'customFields'
-  | 'enableLabelMatching'
-  | 'enableSound';
+export type StorageKey = keyof FormFillerSettings | 'enableSound';
 
 /**
  * Chrome storage data structure

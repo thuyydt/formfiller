@@ -7,17 +7,9 @@ import { matchCustomField } from '../helpers/customFieldMatcher';
 import { getAllInputs } from '../helpers/domHelpers';
 import { logger } from '../helpers/logger';
 import { fillFileInput, getAllFileInputs } from '../helpers/fileInputHelper';
+import { shouldIgnoreDomain } from '../helpers/domainUtils';
+import { cachedParseIgnoreKeywords } from '../helpers/computedCache';
 import type { FormFillerSettings } from '../types';
-
-// Helper to check if current domain should be ignored
-const shouldIgnoreDomain = (ignoreDomains = ''): boolean => {
-  const domains = (ignoreDomains || '')
-    .split(/\n|,/)
-    .map(s => s.trim())
-    .filter(Boolean);
-  const currentDomain = window.location.hostname;
-  return domains.some(domain => currentDomain.endsWith(domain));
-};
 
 const fillInputs = async (settings: FormFillerSettings = {}): Promise<void> => {
   await Promise.resolve(); // Satisfy require-await rule
@@ -46,10 +38,7 @@ const fillInputs = async (settings: FormFillerSettings = {}): Promise<void> => {
   if (!inputs.length) {
     return;
   }
-  const ignoreKeywords = (settings.ignoreFields || '')
-    .split(',')
-    .map(s => s.trim().toLowerCase())
-    .filter(Boolean);
+  const ignoreKeywords = cachedParseIgnoreKeywords(settings.ignoreFields || '');
 
   for (const input of inputs) {
     // Log field detection
@@ -177,41 +166,76 @@ const fillInputs = async (settings: FormFillerSettings = {}): Promise<void> => {
           try {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
             const fakerPath = customField.faker.split('.');
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            let fakerValue: any = faker;
 
-            // Navigate through the faker object path (e.g., 'person.firstName')
-            for (const part of fakerPath) {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-              fakerValue = fakerValue[part];
-            }
+            // Security: Validate faker path to prevent prototype pollution
+            const dangerousProperties = [
+              '__proto__',
+              'constructor',
+              'prototype',
+              'toString',
+              'valueOf',
+              'hasOwnProperty',
+              'isPrototypeOf',
+              'propertyIsEnumerable',
+              'toLocaleString'
+            ];
 
-            // Call the faker function if it exists
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-            if (typeof fakerValue === 'function') {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-              const generatedValue = fakerValue();
-              input.value = String(generatedValue);
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-            } else {
-              // Fallback if path is invalid
+            const isPathSafe = fakerPath.every(
+              part =>
+                typeof part === 'string' &&
+                part.length > 0 &&
+                !dangerousProperties.includes(part.toLowerCase()) &&
+                /^[a-zA-Z][a-zA-Z0-9]*$/.test(part)
+            );
+
+            if (!isPathSafe) {
+              logger.warn('Unsafe faker path detected:', customField.faker);
               const label = getElmType(input);
               const japanLabel = getElmJapanType(input);
+              input.value = generateInputValue(label, input, japanLabel);
+            } else {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              let fakerValue: any = faker;
 
-              // Check if it's a password field and defaultPassword is set
-              let value: string;
-              if (
-                label === 'password' &&
-                settings.defaultPassword &&
-                settings.defaultPassword.trim() !== ''
-              ) {
-                value = settings.defaultPassword;
-              } else {
-                value = generateInputValue(label, input, japanLabel);
+              // Navigate through the faker object path (e.g., 'person.firstName')
+              for (const part of fakerPath) {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                if (fakerValue && Object.prototype.hasOwnProperty.call(fakerValue, part)) {
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+                  fakerValue = fakerValue[part];
+                } else {
+                  fakerValue = undefined;
+                  break;
+                }
               }
 
-              input.value = String(value);
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+              // Call the faker function if it exists
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+              if (typeof fakerValue === 'function') {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+                const generatedValue = fakerValue();
+                input.value = String(generatedValue);
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+              } else {
+                // Fallback if path is invalid
+                const label = getElmType(input);
+                const japanLabel = getElmJapanType(input);
+
+                // Check if it's a password field and defaultPassword is set
+                let value: string;
+                if (
+                  label === 'password' &&
+                  settings.defaultPassword &&
+                  settings.defaultPassword.trim() !== ''
+                ) {
+                  value = settings.defaultPassword;
+                } else {
+                  value = generateInputValue(label, input, japanLabel);
+                }
+
+                input.value = String(value);
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+              }
             }
           } catch (error) {
             // Fallback on error
@@ -287,8 +311,9 @@ const triggerInputEvents = (element: HTMLInputElement): void => {
     element.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true }));
     element.dispatchEvent(new KeyboardEvent('keypress', { bubbles: true }));
     element.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true }));
-  } catch {
-    // Silently ignore keyboard event errors
+  } catch (error) {
+    // Log keyboard event errors for debugging but don't break the flow
+    logger.debug('Keyboard event dispatch failed:', error);
   }
 };
 

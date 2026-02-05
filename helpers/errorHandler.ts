@@ -100,18 +100,18 @@ export function getUserFriendlyMessage(error: Error): string {
   const category = categorizeError(error);
 
   switch (category) {
-  case ErrorCategory.NETWORK:
-    return 'Network connection issue. Please check your internet connection.';
-  case ErrorCategory.STORAGE:
-    return 'Storage error. Your browser may be out of space.';
-  case ErrorCategory.DOM:
-    return 'Page structure error. Try refreshing the page.';
-  case ErrorCategory.IMPORT:
-    return 'Extension loading error. Please reload the extension.';
-  case ErrorCategory.VALIDATION:
-    return 'Invalid data format. Please check your settings.';
-  default:
-    return 'An unexpected error occurred. Please try again.';
+    case ErrorCategory.NETWORK:
+      return 'Network connection issue. Please check your internet connection.';
+    case ErrorCategory.STORAGE:
+      return 'Storage error. Your browser may be out of space.';
+    case ErrorCategory.DOM:
+      return 'Page structure error. Try refreshing the page.';
+    case ErrorCategory.IMPORT:
+      return 'Extension loading error. Please reload the extension.';
+    case ErrorCategory.VALIDATION:
+      return 'Invalid data format. Please check your settings.';
+    default:
+      return 'An unexpected error occurred. Please try again.';
   }
 }
 

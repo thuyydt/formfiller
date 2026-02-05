@@ -17,21 +17,28 @@ initGlobalErrorHandler();
 // Store the last focused element for context menu
 let lastFocusedElement: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null = null;
 
+// Mutex flag to prevent concurrent fill operations
+let isFilling = false;
+
 // Track focused editable elements
-document.addEventListener(
-  'focusin',
-  event => {
-    const target = event.target as HTMLElement;
-    if (
-      target instanceof HTMLInputElement ||
-      target instanceof HTMLTextAreaElement ||
-      target instanceof HTMLSelectElement
-    ) {
-      lastFocusedElement = target;
-    }
-  },
-  true
-);
+const handleFocusIn = (event: FocusEvent): void => {
+  const target = event.target as HTMLElement;
+  if (
+    target instanceof HTMLInputElement ||
+    target instanceof HTMLTextAreaElement ||
+    target instanceof HTMLSelectElement
+  ) {
+    lastFocusedElement = target;
+  }
+};
+
+document.addEventListener('focusin', handleFocusIn, true);
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+  document.removeEventListener('focusin', handleFocusIn, true);
+  lastFocusedElement = null;
+});
 
 // Initialize the faker locale based on stored value
 void (async () => {
@@ -62,7 +69,15 @@ chrome.runtime.onMessage.addListener(
     sendResponse: (response: MessageResponse) => void
   ): boolean => {
     if (request && request.type === 'FILL_FORM') {
+      // Prevent concurrent fill operations
+      if (isFilling) {
+        logger.warn('Fill operation already in progress, ignoring request');
+        sendResponse({ status: 'busy' });
+        return true;
+      }
+
       void (async () => {
+        isFilling = true;
         try {
           // Check rate limit to prevent abuse
           if (!formFillRateLimiter.isAllowed()) {
@@ -118,6 +133,8 @@ chrome.runtime.onMessage.addListener(
           showNotification(getUserFriendlyMessage(err), 'error');
 
           sendResponse({ status: 'error' });
+        } finally {
+          isFilling = false;
         }
       })();
       // Indicate async response

@@ -8,8 +8,12 @@ interface ComputedCacheEntry<T> {
   timestamp: number;
 }
 
+// Store pending promises to prevent duplicate concurrent computations
+type PendingPromise<T> = Promise<T>;
+
 class ComputedCache {
   private cache: Map<string, ComputedCacheEntry<unknown>> = new Map();
+  private pendingPromises: Map<string, PendingPromise<unknown>> = new Map();
   private readonly DEFAULT_TTL = 5000; // 5 seconds for computed values
   private readonly MAX_SIZE = 200;
 
@@ -44,7 +48,8 @@ class ComputedCache {
   }
 
   /**
-   * Async version of getOrCompute
+   * Async version of getOrCompute with race condition prevention
+   * Uses pending promise pattern to avoid duplicate concurrent computations
    */
   async getOrComputeAsync<T>(
     key: string,
@@ -54,25 +59,44 @@ class ComputedCache {
     const cached = this.cache.get(key);
     const now = Date.now();
 
+    // Return cached value if valid
     if (cached && now - cached.timestamp < ttl) {
       return cached.value as T;
     }
 
-    const value = await computeFn();
-
-    if (this.cache.size >= this.MAX_SIZE) {
-      const firstKey = this.cache.keys().next().value;
-      if (firstKey) {
-        this.cache.delete(firstKey);
-      }
+    // Check if computation is already in progress
+    const pendingPromise = this.pendingPromises.get(key);
+    if (pendingPromise) {
+      return pendingPromise as Promise<T>;
     }
 
-    this.cache.set(key, {
-      value,
-      timestamp: now
-    });
+    // Start new computation and store the promise
+    const computePromise = (async () => {
+      try {
+        const value = await computeFn();
 
-    return value;
+        // Apply LRU eviction
+        if (this.cache.size >= this.MAX_SIZE) {
+          const firstKey = this.cache.keys().next().value;
+          if (firstKey) {
+            this.cache.delete(firstKey);
+          }
+        }
+
+        this.cache.set(key, {
+          value,
+          timestamp: Date.now()
+        });
+
+        return value;
+      } finally {
+        // Always remove from pending when done
+        this.pendingPromises.delete(key);
+      }
+    })();
+
+    this.pendingPromises.set(key, computePromise);
+    return computePromise;
   }
 
   /**
@@ -90,6 +114,7 @@ class ComputedCache {
    */
   invalidate(key: string): void {
     this.cache.delete(key);
+    this.pendingPromises.delete(key);
   }
 
   /**
@@ -97,6 +122,7 @@ class ComputedCache {
    */
   clear(): void {
     this.cache.clear();
+    this.pendingPromises.clear();
   }
 
   /**
@@ -104,6 +130,13 @@ class ComputedCache {
    */
   size(): number {
     return this.cache.size;
+  }
+
+  /**
+   * Get number of pending computations
+   */
+  pendingCount(): number {
+    return this.pendingPromises.size;
   }
 }
 
@@ -156,6 +189,28 @@ export function cachedParseIgnoreDomains(ignoreDomains: string): string[] {
       return ignoreDomains
         .split(/\n|,/)
         .map(s => s.trim())
+        .filter(Boolean);
+    },
+    60000
+  ); // Cache for 1 minute
+}
+
+/**
+ * Helper: Cache ignore keywords parsing
+ * Used by form fillers to avoid re-parsing on each field
+ */
+export function cachedParseIgnoreKeywords(ignoreFields: string): string[] {
+  if (!ignoreFields || ignoreFields.trim() === '') {
+    return [];
+  }
+
+  const key = `keywords:${ignoreFields}`;
+  return computedCache.getOrCompute(
+    key,
+    () => {
+      return ignoreFields
+        .split(',')
+        .map(s => s.trim().toLowerCase())
         .filter(Boolean);
     },
     60000

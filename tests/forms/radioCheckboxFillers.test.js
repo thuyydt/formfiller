@@ -199,9 +199,7 @@ describe('radioCheckboxFillers', () => {
       document.body.appendChild(form);
 
       const settings = {
-        customFields: [
-          { field: '*email*', type: 'list', value: 'true' }
-        ],
+        customFields: [{ field: '*email*', type: 'list', value: 'true' }],
         enableLabelMatching: false
       };
 

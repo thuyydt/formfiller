@@ -25,46 +25,63 @@ const localeNames: Record<LocaleName, string> = {
 // Use browser API for Firefox compatibility, fallback to chrome API
 const browserAPI = typeof browser !== 'undefined' ? browser : chrome;
 
+// Detect Safari - Safari Web Extensions use browser namespace but behave differently
+const isSafari =
+  typeof browser !== 'undefined' &&
+  navigator.userAgent.includes('Safari') &&
+  !navigator.userAgent.includes('Chrome');
+
 const createLocaleContextMenus = async (currentLocale?: string): Promise<void> => {
   return new Promise<void>(resolve => {
     browserAPI.contextMenus.removeAll(() => {
-      // Create menus immediately after removal
-      // Use 'action' for Chrome MV3, 'browser_action' for Firefox
-      const contextType = (
-        browserAPI.action ? 'action' : 'browser_action'
-      ) as chrome.contextMenus.ContextType;
+      // Safari doesn't support 'action' or 'browser_action' context types
+      // Use 'page' context for Safari, 'action'/'browser_action' for others
+      if (isSafari) {
+        // For Safari, only create the editable context menu
+        // Safari doesn't support action/browser_action contexts
+        browserAPI.contextMenus.create({
+          id: 'fill-this-field' as ContextMenuId,
+          title: 'Fill This Field',
+          contexts: ['editable']
+        });
+      } else {
+        // Chrome/Firefox: Use action context menus
+        const contextType = (
+          browserAPI.action ? 'action' : 'browser_action'
+        ) as chrome.contextMenus.ContextType;
 
-      browserAPI.contextMenus.create({
-        id: 'current-locale' as ContextMenuId,
-        title: `Current: ${(currentLocale && localeNames[currentLocale as LocaleName]) ?? 'Japanese'} (Click icon to fill form)`,
-        contexts: [contextType],
-        enabled: false
-      });
+        browserAPI.contextMenus.create({
+          id: 'current-locale' as ContextMenuId,
+          title: `Current: ${(currentLocale && localeNames[currentLocale as LocaleName]) ?? 'Japanese'} (Click icon to fill form)`,
+          contexts: [contextType],
+          enabled: false
+        });
 
-      browserAPI.contextMenus.create({
-        id: 'separator-1' as ContextMenuId,
-        type: 'separator',
-        contexts: [contextType]
-      });
+        browserAPI.contextMenus.create({
+          id: 'separator-1' as ContextMenuId,
+          type: 'separator',
+          contexts: [contextType]
+        });
 
-      browserAPI.contextMenus.create({
-        id: 'undo-fill' as ContextMenuId,
-        title: 'Undo Last Fill',
-        contexts: [contextType]
-      });
+        browserAPI.contextMenus.create({
+          id: 'undo-fill' as ContextMenuId,
+          title: 'Undo Last Fill',
+          contexts: [contextType]
+        });
 
-      browserAPI.contextMenus.create({
-        id: 'clear-form' as ContextMenuId,
-        title: 'Clear All Fields',
-        contexts: [contextType]
-      });
+        browserAPI.contextMenus.create({
+          id: 'clear-form' as ContextMenuId,
+          title: 'Clear All Fields',
+          contexts: [contextType]
+        });
 
-      // Add context menu for individual field filling
-      browserAPI.contextMenus.create({
-        id: 'fill-this-field' as ContextMenuId,
-        title: 'Fill This Field',
-        contexts: ['editable']
-      });
+        // Add context menu for individual field filling
+        browserAPI.contextMenus.create({
+          id: 'fill-this-field' as ContextMenuId,
+          title: 'Fill This Field',
+          contexts: ['editable']
+        });
+      }
 
       resolve();
     });
@@ -121,17 +138,17 @@ browserAPI.commands.onCommand.addListener((command: string, tab?: chrome.tabs.Ta
     let message: ExtensionMessage;
 
     switch (command) {
-    case 'fill_form':
-      message = { type: 'FILL_FORM' };
-      break;
-    case 'undo_fill':
-      message = { type: 'UNDO_FILL' };
-      break;
-    case 'clear_form':
-      message = { type: 'CLEAR_FORM' };
-      break;
-    default:
-      return;
+      case 'fill_form':
+        message = { type: 'FILL_FORM' };
+        break;
+      case 'undo_fill':
+        message = { type: 'UNDO_FILL' };
+        break;
+      case 'clear_form':
+        message = { type: 'CLEAR_FORM' };
+        break;
+      default:
+        return;
     }
 
     try {
