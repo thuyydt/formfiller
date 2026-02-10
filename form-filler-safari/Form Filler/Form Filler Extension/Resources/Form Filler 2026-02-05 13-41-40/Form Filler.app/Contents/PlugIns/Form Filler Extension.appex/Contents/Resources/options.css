@@ -1,0 +1,30 @@
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;margin:0;background:#f4f6fa}.container{max-width:800px;margin:40px auto;background:#fff;padding:0 0 32px 0;border-radius:12px;box-shadow:0 2px 20px rgba(0,0,0,0.08)}
+
+/* Tabs Navigation */
+.tabs-nav{display:flex;border-bottom:2px solid #e0e0e0;padding:0 36px;margin-top:20px;gap:4px}.tab-button{background:transparent;border:none;padding:12px 24px;font-size:1.05em;font-weight:500;color:#666;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;position:relative;top:2px}.tab-button:hover{color:#2d7ff9;background:#f8fbff}.tab-button.active{color:#2d7ff9;border-bottom-color:#2d7ff9;font-weight:600}.tab-button .tab-icon{margin-right:6px;font-size:1.1em}
+
+/* Tab Content */
+.tab-content{display:none;animation:fadeIn .3s}.tab-content.active{display:block}@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+fieldset{border:1px solid #e0e0e0;border-radius:8px;margin:28px 36px 0 36px;padding:18px 24px 18px 24px;background:#f9f9f9}legend{color:#2d7ff9;font-size:1.15em;font-weight:bold;padding:0 8px}label{display:block;font-size:1.05em;margin-bottom:8px}select,input,textarea{padding:8px 12px;border-radius:6px;border:1px solid #ccc;font-size:1em;transition:border .2s}select:focus,input:focus,textarea:focus{border:1.5px solid #2d7ff9;outline:none}input[type="text"],textarea{width:100%;box-sizing:border-box}.note,.tricks{background:#f1f7ff;border-left:4px solid #2d7ff9;padding:12px 16px;margin:12px 0 0 0;border-radius:4px;font-size:.96em;line-height:1.5}.custom-fields-list{margin-top:10px}.custom-field-row{display:flex;gap:8px;margin-bottom:8px}.custom-field-row input{flex:1}.remove-btn{background:#e74c3c;color:#fff;border:none;border-radius:4px;padding:6px 12px;cursor:pointer;transition:background .2s}.remove-btn:hover{background:#c0392b}.add-btn{background:#2d7ff9;color:#fff;border:none;border-radius:6px;padding:8px 16px;cursor:pointer;font-size:1em;font-weight:500;transition:background .2s}.add-btn:hover{background:#1e5fcf}
+
+/* Custom fields table cell visibility */
+.custom-fields-table .faker-cell,
+.custom-fields-table .value-cell {
+  display: table-cell;
+}
+
+.custom-fields-table .hidden-cell {
+  display: none !important;
+}
+
+.save-btn{display:block;background:#27ae60;color:#fff;border:none;border-radius:8px;padding:14px 32px;font-size:1.1em;font-weight:600;margin:32px auto 0 auto;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(39,174,96,0.2)}.save-btn:hover{background:#229954;box-shadow:0 4px 12px rgba(39,174,96,0.3);transform:translateY(-1px)}#status{margin-top:18px;font-size:1.05em;color:#27ae60;min-height:24px;text-align:center;font-weight:500}.custom-fields-table{width:100%;border-collapse:separate;border-spacing:0;margin-top:10px;background:#f8fbff;border-radius:8px;box-shadow:0 1px 4px rgba(45,127,249,0.07);overflow:hidden}.custom-fields-table th,.custom-fields-table td{padding:10px 12px;border-bottom:1px solid #e0e7ef;font-size:1em}.custom-fields-table th{background:#eaf2ff;color:#2d7ff9;font-weight:600;text-align:left}.custom-fields-table tr:last-child td{border-bottom:none}.custom-fields-table select,.custom-fields-table input[type="text"]{width:100%;padding:6px 8px;border-radius:4px;border:1px solid #c3d3ee;font-size:1em;background:#fff;transition:border .2s;box-sizing:border-box}.custom-fields-table select:focus,.custom-fields-table input[type="text"]:focus{border:1.5px solid #2d7ff9;outline:none}.custom-fields-table .remove-btn{background:#e74c3c;color:#fff;border:none;border-radius:4px;padding:4px 8px;font-size:.98em;cursor:pointer;transition:background .2s}.custom-fields-table .remove-btn:hover{background:#c0392b}
+
+/* Export/Import buttons */
+.export-btn,.import-btn{background:#34495e;color:#fff;border:none;border-radius:6px;padding:10px 20px;cursor:pointer;font-size:.98em;margin:0 6px;transition:background .2s}.export-btn:hover,.import-btn:hover{background:#2c3e50}
+
+/* Checkbox styling */
+input[type="checkbox"]{width:18px;height:18px;cursor:pointer;margin-right:8px;vertical-align:middle}
+
+/* Responsive */
+@media(max-width:768px){.container{margin:20px;border-radius:8px}.tabs-nav{padding:0 20px;overflow-x:auto}.tab-button{padding:10px 16px;font-size:.95em}fieldset{margin:20px 20px 0 20px;padding:14px 18px}}
